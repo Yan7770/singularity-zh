@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# debug artifacts
+*_dump.html
+*.log
+shots/
+.edge*/
+
+# local preview screenshots
+preview-*.png
+live-*.png
