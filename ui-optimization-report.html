@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Singularity · 全站 UI 优化说明</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        --ink: #0b0f10;
+        --ink-2: #33393b;
+        --ink-3: #5b6366;
+        --paper: #f4f3ef;
+        --surface: #faf9f5;
+        --accent: #0c6e63;
+        --warn: #a4382c;
+        --line: rgba(11, 15, 16, 0.14);
+        --line-soft: rgba(11, 15, 16, 0.08);
+        --serif: "Instrument Serif", "Songti SC", "Noto Serif SC", serif;
+        --sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+        --mono: "IBM Plex Mono", "PingFang SC", ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.85;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 72px 28px 120px; }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      h1 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        margin: 14px 0 20px;
+      }
+      h1 em { font-style: italic; }
+      h2 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 32px);
+        line-height: 1.2;
+        margin: 64px 0 6px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      h2 .n {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        color: var(--ink-3);
+        display: block;
+        margin-bottom: 8px;
+      }
+      h3 {
+        font-size: 15px;
+        font-weight: 500;
+        margin: 34px 0 8px;
+      }
+      h4 {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin: 28px 0 8px;
+      }
+      p { margin: 0 0 14px; color: var(--ink-2); }
+      .lede { font-size: 17px; line-height: 1.75; color: var(--ink-2); max-width: 40em; }
+      ul, ol { margin: 0 0 16px; padding-left: 1.15em; color: var(--ink-2); }
+      li { margin-bottom: 7px; }
+      li::marker { color: var(--ink-3); }
+      code {
+        font-family: var(--mono);
+        font-size: 0.86em;
+        background: rgba(11, 15, 16, 0.055);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 26px;
+        padding: 14px 0 18px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0 20px;
+        font-size: 14px;
+      }
+      th {
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        padding: 0 12px 8px 0;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      td {
+        padding: 9px 12px 9px 0;
+        border-bottom: 1px solid var(--line-soft);
+        vertical-align: top;
+        color: var(--ink-2);
+      }
+      td:first-child { color: var(--ink); }
+      .tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.08em;
+        padding: 2px 6px;
+        border: 1px solid currentColor;
+        border-radius: 2px;
+        white-space: nowrap;
+      }
+      .tag--hi { color: var(--warn); }
+      .tag--mid { color: #8a6410; }
+      .tag--low { color: var(--ink-3); }
+      .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 18px 0 8px; }
+      .sw { border: 1px solid var(--line); background: var(--surface); }
+      .sw i { display: block; height: 52px; }
+      .sw span { display: block; padding: 7px 9px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ink-3); }
+      .sw b { display: block; font-family: var(--mono); font-size: 10px; font-weight: 400; color: var(--ink); letter-spacing: 0.06em; }
+      .callout {
+        border-left: 2px solid var(--accent);
+        padding: 4px 0 4px 16px;
+        margin: 18px 0 22px;
+        color: var(--ink-2);
+      }
+      .callout strong { color: var(--ink); font-weight: 500; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+      .ok { color: var(--accent); font-weight: 500; }
+      .no { color: var(--warn); font-weight: 500; }
+      figure { margin: 20px 0 24px; }
+      figure img { width: 100%; border: 1px solid var(--line); display: block; }
+      figcaption { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); padding-top: 7px; }
+      .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+      @media (max-width: 640px) {
+        .wrap { padding: 44px 20px 80px; }
+        .grid2, .two-up { grid-template-columns: 1fr; }
+        table { font-size: 13px; }
+        th:nth-child(3), td:nth-child(3) { display: none; }
+      }
+      @media print {
+        body { background: #fff; font-size: 10.5pt; }
+        .wrap { max-width: none; padding: 0; }
+        h2 { page-break-after: avoid; }
+        table { page-break-inside: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="eyebrow">Singularity · UI 优化说明 · 2026-10-19</p>
+      <h1>让「排除不确定性」<br /><em>真正成立。</em></h1>
+      <p class="lede">
+        本次优化的对象是 singularity-bilingual（双语版静态站点）。原站以 React 构建产物 + 一层 25 KB 翻译脚本的方式发布，视觉语言本身已经很强——奶油纸底色、Instrument Serif 的编辑体标题、等宽微标签、墨绿强调色。问题不在审美方向，而在<strong>执行精度</strong>：跨断点的排版不收敛、状态与反馈缺位、双语两套排印互相打架。以下先梳理结构与问题，再逐项说明调整方向与预期效果。
+      </p>
+
+      <div class="meta-row">
+        <span>范围 · 8 个区块 / 150 条文案 / 2 种语言</span>
+        <span>断点 · 1440 · 1024 · 900 · 640 · 390</span>
+        <span>约束 · 品牌风格与功能逻辑不变</span>
+      </div>
+
+      <!-- 1 -->
+      <h2><span class="n">01</span>当前站点的结构与实现方式</h2>
+
+      <p>原站是单页滚动式站点，语义上分为 10 个纵向区块，全部由 React 运行时渲染进 <code>#root</code>：</p>
+
+      <table>
+        <thead>
+          <tr><th>序</th><th>区块</th><th>作用</th><th>主要组件</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>—</td><td>Header（fixed）</td><td>品牌、四项导航、主 CTA</td><td>吸顶栏 / 深色区反色</td></tr>
+          <tr><td>—</td><td>Hero</td><td>主张、双 CTA、事件视界图版、三项指标</td><td>Canvas + SVG 覆盖层</td></tr>
+          <tr><td>01</td><td>Doctrine</td><td>信条陈述 + 定义 / 诊所 / 使命三栏</td><td>逐词显现长段落</td></tr>
+          <tr><td>02</td><td>Instruments</td><td>四台仪器</td><td>四栏等分卡片</td></tr>
+          <tr><td>03</td><td>Protocol</td><td>十二周五步流程</td><td>左栏粘性 + 右侧时间轴</td></tr>
+          <tr><td>04</td><td>Telemetry</td><td>连续监测（深色区）</td><td>三标签 + 实时波形面板</td></tr>
+          <tr><td>05</td><td>Outcomes</td><td>四项队列指标</td><td>计数动画</td></tr>
+          <tr><td>06</td><td>Journal</td><td>三篇文章</td><td>CSS 渐变缩略图卡片</td></tr>
+          <tr><td>—</td><td>Quote / Membership / Footer</td><td>会员证言、申请表单、巨型字标</td><td>表单 + 手风琴式页脚</td></tr>
+        </tbody>
+      </table>
+
+      <p>实现层面的关键事实，决定了优化的做法：</p>
+      <ul>
+        <li>样式是 <strong>Tailwind 的压缩产物</strong>（<code>app.css</code> 33 KB，单行），类名以任意值形式内联（如 <code>text-[8.5px]</code>、<code>tracking-[0.22em]</code>），没有可复用的设计令牌层。</li>
+        <li>文案靠 <strong>遍历 DOM 文本节点替换</strong>（<code>i18n.js</code>），依赖「英文原文」作为哈希键；任何文案微调都会让对应词条失配。</li>
+        <li>动效由 IntersectionObserver 逐个元素驱动，非统一节流。</li>
+      </ul>
+      <div class="callout">
+        <strong>结论：</strong>在压缩产物上叠样式覆盖只能治表——排版断点、标题层级、状态反馈这些都是结构问题。因此本次按<strong>同一视觉语言重建为无框架静态站</strong>（1 HTML + 1 CSS + 1 JS），把令牌、组件、动效收进一套可维护的体系，并保留全部内容与交互逻辑。
+      </div>
+
+      <!-- 2 -->
+      <h2><span class="n">02</span>问题清单</h2>
+      <p>以下问题均在 1440×900 与 390×844 两种视口下实测复现，按严重度分级。</p>
+
+      <h3>A · 视觉界面</h3>
+      <table>
+        <thead><tr><th>#</th><th>问题</th><th>实测依据</th><th>级别</th></tr></thead>
+        <tbody>
+          <tr><td>A1</td><td>移动端标题词间距丢失</td><td>390 宽下 H1 渲染为 “Theendof approximation.”</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>A2</td><td>页脚字标下伸部与版权行相撞</td><td>「g」的字尾穿过 © 2036 那一行</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>A3</td><td>期刊卡片标题与分隔线穿字</td><td>第三张卡片标题被水平线划过</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>A4</td><td>深色区交界头部色块硬边</td><td>导航文字为深色、叠在深底上几乎不可读</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>A5</td><td>指标计数器宽度抖动</td><td>未启用 tabular-nums，「3.1」与单位重叠</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>A6</td><td>四栏卡片底部信息基线不齐</td><td>同排卡片 meta 行上下浮动 3–5 px</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>A7</td><td>期刊卡片日期行错位</td><td>标题一行的卡片与两行的卡片底栏不同高</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>A8</td><td>表单面板冷蓝渐变</td><td>与暖奶油底色脱节，出现脏灰过渡</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>A9</td><td>移动端双按钮宽度不一</td><td>228 px 与 179 px 并排，视觉失衡</td><td><span class="tag tag--low">轻</span></td></tr>
+          <tr><td>A10</td><td>Watch/遥测面板大量留白</td><td>波形被挤在 200 px 高的容器中央</td><td><span class="tag tag--low">轻</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>B · 文本内容</h3>
+      <table>
+        <thead><tr><th>#</th><th>问题</th><th>实测依据</th><th>级别</th></tr></thead>
+        <tbody>
+          <tr><td>B1</td><td>同一动作四种说法</td><td>Request introduction / Request an introduction / Submit request / 申请引荐</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>B2</td><td>页脚栏目名与内容错位</td><td>「OFFICE」下挂 Membership、Physicians、Residencies、Contact</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>B3</td><td>卡片脚注分隔符混写</td><td>「·」「/」「resolution」同一层级三种写法</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>B4</td><td>中文标签沿用拉丁字距</td><td>tracking 0.16–0.22em 作用于汉字，字间散开</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>B5</td><td>中文正文孤字行</td><td>首屏说明段末尾「生。」独占一行</td><td><span class="tag tag--low">轻</span></td></tr>
+          <tr><td>B6</td><td>斜体作用于汉字</td><td>§信条 的强调句出现伪斜（synthetic oblique）</td><td><span class="tag tag--low">轻</span></td></tr>
+          <tr><td>B7</td><td>页脚与法务项全为死链</td><td>Physicians / Residencies / Contact / Privacy / Terms / Compliance / Accessibility 均指向 #top</td><td><span class="tag tag--hi">严重</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>C · 动效与状态反馈</h3>
+      <table>
+        <thead><tr><th>#</th><th>问题</th><th>实测依据</th><th>级别</th></tr></thead>
+        <tbody>
+          <tr><td>C1</td><td>表单提交零反馈</td><td>填合法邮箱提交后，无加载、无成功、无跳转，表单原样停留</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>C2</td><td>数字依赖动画才有值</td><td>无 JS 或 IO 失效时四项指标恒显示 0</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>C3</td><td>过渡时长与缓动混用</td><td>0.2s / 0.35s / 0.5s / 0.7s 并存，无统一曲线</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>C4</td><td>画布动画不随视口暂停</td><td>滚出屏后 rAF 仍在跑</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>C5</td><td>语言切换整页重排</td><td>中英互换瞬间跳变，无过渡</td><td><span class="tag tag--low">轻</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>D · 可访问性与性能</h3>
+      <table>
+        <thead><tr><th>#</th><th>问题</th><th>实测依据</th><th>级别</th></tr></thead>
+        <tbody>
+          <tr><td>D1</td><td>次级文字对比度不足</td><td>#6D7578 on #F4F3EF = <strong>4.24:1</strong>（正文 AA 需 4.5）</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>D2</td><td>深色区微标签对比度极低</td><td>rgba(244,243,239,.35) on #0B0F10 ≈ <strong>2.9:1</strong></td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>D3</td><td>字号低于可用下限</td><td>表单标签 <code>text-[8.5px]</code>，多项微标签 9–10 px</td><td><span class="tag tag--hi">严重</span></td></tr>
+          <tr><td>D4</td><td>标签页缺语义</td><td>Cardiac/Metabolic/Neural 为普通 button，无 <code>role=tab</code> / <code>aria-selected</code></td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>D5</td><td>菜单按钮类型错误</td><td><code>&lt;button type="submit"&gt;</code> 且无表单约束</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>D6</td><td>缺跳过导航</td><td>键盘用户需 Tab 穿透整个头部</td><td><span class="tag tag--low">轻</span></td></tr>
+          <tr><td>D7</td><td>运行时体积偏重</td><td>React 产物 341 KB + Tailwind 33 KB + 翻译层 25 KB，为单页营销站</td><td><span class="tag tag--mid">中</span></td></tr>
+          <tr><td>D8</td><td>中文字体代价高</td><td>Google Fonts 同时拉 Noto Serif SC 与 Noto Sans SC 各 3 字重，子集总量以 MB 计</td><td><span class="tag tag--hi">严重</span></td></tr>
+        </tbody>
+      </table>
+
+      <!-- 3 -->
+      <h2><span class="n">03</span>优化方向与预期效果</h2>
+
+      <h3>一 · 视觉界面</h3>
+
+      <h4>1 建立令牌层，替换任意值</h4>
+      <p><strong>调整：</strong>把颜色、字号、间距、动效收敛为 <code>:root</code> 变量，屏幕尺寸变化时用 <code>clamp()</code> 连续插值，而不是靠一串断点硬跳。版心固定 <code>78rem</code>，左右留白 <code>clamp(20px, 4.5vw, 56px)</code>。</p>
+      <p><strong>预期：</strong>同一组件在任何宽度下比例一致；后续改一处即可全站生效，不再出现 8.5px 这类失控值。</p>
+
+      <h4>2 深色区改为令牌反转，而非覆盖</h4>
+      <p><strong>调整：</strong>遥测区只重声明 <code>--ink / --paper / --line</code> 等变量，组件本身不写第二套深色规则。头部通过 <code>data-on-dark</code> 同步反转，并改用<strong>下缘渐隐的磨砂遮罩</strong>替代整块实色面板。</p>
+      <p><strong>预期：</strong>彻底消除深/浅交界处的硬边色块，导航文字在深底上保持可读；新增深色区块无需再写样式。</p>
+
+      <h4>3 版面节奏与对齐规则</h4>
+      <p><strong>调整：</strong>每个区块统一「编号眉标 + 顶部细线 + 标题区」骨架；三栏文字的基线与细线取齐；卡片用 flex 把脚注压到底部；期刊卡片给标题预留两行高度，使日期行跨卡对齐；指标数字启用 <code>font-variant-numeric: tabular-nums</code>。</p>
+      <p><strong>预期：</strong>并排元素无需目测就能对齐；计数动画过程中数字不抖动、不与单位重叠。</p>
+
+      <h4>4 组件样式收敛</h4>
+      <p><strong>调整：</strong>按钮统一为「墨色实心 / 描边」两级，同高 48 px，移动端等宽满行；表单从冷蓝渐变改为暖白纸面，输入框保留常驻下划线并在聚焦时加深；微标签下限提至 11 px。</p>
+      <p><strong>预期：</strong>主次动作一眼可辨；表单可填写性明显提升，不再像装饰性占位。</p>
+
+      <h4>5 响应式重建</h4>
+      <p><strong>调整：</strong>900 px 以下收起导航进入全屏菜单；640 px 以下首屏改为单列，指标条改为「标签左 / 数值右」的对照行；卡片、指标、页脚依次降列，最小点击区 44 px。</p>
+      <p><strong>预期：</strong>390 px 下无横向滚动、无截断、无挤压；拇指可点区域达标。</p>
+
+      <h3>二 · 文本内容</h3>
+
+      <h4>6 动词统一</h4>
+      <p><strong>调整：</strong>一个动作一种说法——导航与首屏统一 <code>Request an introduction</code>（中：申请引荐），表单按钮保留 <code>Submit request</code>（提交申请），成功后按钮变为 <code>Request received</code>（已收到）。</p>
+      <p><strong>预期：</strong>用户不必判断「这三个按钮是不是同一件事」。</p>
+
+      <h4>7 层级命名与栏目语义</h4>
+      <p><strong>调整：</strong>眉标统一「编号 — 名称」；页脚三列改为 Practice（科学/仪器/流程/期刊）、Access（会员/医生/驻留/联系）、Legal，栏目名与条目对齐；无对应页面的法务项不再伪装成链接，改为带点线下划的占位项。</p>
+      <p><strong>预期：</strong>信息架构自洽，杜绝「点了跳到页首」的挫败。</p>
+
+      <h4>8 单位与符号的一致性</h4>
+      <p><strong>调整：</strong>卡片脚注统一 <code>值 · 限定词</code>（3.2 Gb · 60× depth / 1,400 signals · daily / 0.4 μm · sub-cellular / 1 physician · 22 members）；技术符号关闭 <code>text-transform: uppercase</code>，避免 μm 被渲染成 ΜM、λ 变成 Λ。</p>
+      <p><strong>预期：</strong>专业读者不会读到错误单位，视觉上也更克制。</p>
+
+      <h4>9 中文排印单独调校</h4>
+      <p><strong>调整：</strong>汉字场景把字距从 0.16–0.22em 降到 0.06em；正文行高提到 1.9；标题行高 1.28；斜体在中文下改为字重强调（消除伪斜）；断句按标点切分，避免长句中段被生硬断开。</p>
+      <p><strong>预期：</strong>中文不再是「英文版式套汉字」，阅读节奏接近原生中文编辑排版。</p>
+
+      <h4>10 补齐状态文案</h4>
+      <p><strong>调整：</strong>新增必填 / 格式错误 / 发送中 / 成功 / 失败五类文案（中英各一套），错误就近显示并写明期望格式。</p>
+      <p><strong>预期：</strong>用户永远知道「刚才那一下发生了什么、下一步做什么」。</p>
+
+      <h3>三 · 动效交互</h3>
+
+      <h4>11 动效令牌</h4>
+      <p><strong>调整：</strong>时长固定三档 180 / 380 / 720 ms，缓动统一 <code>cubic-bezier(.22,.61,.36,1)</code>；入场用 <code>translateY(14px)+opacity</code>，位移量与字号无关。</p>
+      <p><strong>预期：</strong>全站节奏一致，不再有「有的地方弹、有的地方顿」。</p>
+
+      <h4>12 逐词显现重写</h4>
+      <p><strong>调整：</strong>词以 <code>inline-block</code> 包裹并在其间保留真实空格，用 CSS 变量做级联延迟；中文按标点切成语块。</p>
+      <p><strong>预期：</strong>修复移动端「Theendof」粘连；同一机制在中英两种语言下都成立。</p>
+
+      <h4>13 悬停与滚动反馈</h4>
+      <p><strong>调整：</strong>卡片悬停仅改底色与图标色（180 ms）；箭头位移 2 px；期刊「阅读」字样随悬停淡入；导航下划线从左展开；当前区块自动标记。</p>
+      <p><strong>预期：</strong>反馈可见但不喧哗，符合品牌克制的语气。</p>
+
+      <h4>14 画布性能</h4>
+      <p><strong>调整：</strong>事件视界图版与心电波形均以 IntersectionObserver 控制启停，DPR 上限 2，离屏即停；<code>prefers-reduced-motion</code> 下渲染静态帧。</p>
+      <p><strong>预期：</strong>滚动到其他区块时 CPU 归零；低端设备不因画布掉帧。</p>
+
+      <h4>15 加载与状态</h4>
+      <p><strong>调整：</strong>提交时按钮进入 spinner + 文案切「发送中」，完成后整块转入完成态并播报成功（<code>aria-live</code>）；首屏元素分级入场，标题先于说明文字。</p>
+      <p><strong>预期：</strong>表单从「黑盒」变为可感知的过程；首屏建立视觉重心的顺序更自然。</p>
+
+      <!-- 4 -->
+      <h2><span class="n">04</span>设计规范（沿用原品牌色）</h2>
+
+      <div class="swatches">
+        <div class="sw"><i style="background:#0b0f10"></i><span><b>--ink</b>#0B0F10</span></div>
+        <div class="sw"><i style="background:#33393b"></i><span><b>--ink-2</b>#33393B</span></div>
+        <div class="sw"><i style="background:#5b6366"></i><span><b>--ink-3</b>#5B6366 · 5.53:1</span></div>
+        <div class="sw"><i style="background:#f4f3ef"></i><span><b>--paper</b>#F4F3EF</span></div>
+        <div class="sw"><i style="background:#faf9f5"></i><span><b>--surface</b>#FAF9F5</span></div>
+        <div class="sw"><i style="background:#0c6e63"></i><span><b>--accent</b>#0C6E63</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--ink-3);margin-top:-4px">
+        原站的次级文字 <code>#6D7578</code> 仅 4.24:1，本次压深到 <code>#5B6366</code>（5.53:1）；强调绿与纸底色保持不变，深色区强调色提亮为 <code>#5CBCAE</code> 以维持对比。
+      </p>
+
+      <table>
+        <thead><tr><th>层级</th><th>字号</th><th>字体</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>Display</td><td>clamp(44 → 84 px)</td><td>Instrument Serif</td><td>首屏主张</td></tr>
+          <tr><td>H2</td><td>clamp(32 → 56 px)</td><td>Instrument Serif</td><td>区块标题</td></tr>
+          <tr><td>H3</td><td>clamp(21.6 → 28 px)</td><td>Instrument Serif</td><td>卡片 / 步骤标题</td></tr>
+          <tr><td>Lead</td><td>16 → 18 px / 1.72</td><td>Inter</td><td>导语</td></tr>
+          <tr><td>Body</td><td>16 px / 1.7</td><td>Inter</td><td>正文（中文 1.9）</td></tr>
+          <tr><td>Small</td><td>14 px / 1.75</td><td>Inter</td><td>卡片描述</td></tr>
+          <tr><td>Label</td><td>11 px / 0.16em</td><td>IBM Plex Mono</td><td>眉标、脚注</td></tr>
+        </tbody>
+      </table>
+
+      <h3>字体策略：只加载拉丁</h3>
+      <p>
+        原站从中英文字体服务同时拉取 Instrument Serif、Inter 4 字重、IBM Plex Mono 2 字重、Noto Serif SC 3 字重、Noto Sans SC 3 字重。新版只保留三款拉丁字族，中文改用系统字体栈
+        （<code>PingFang SC / Hiragino Sans GB / Microsoft YaHei / Songti SC</code>）——宋体在标题位与 Instrument Serif 的气质本就接近，而中文 webfont 的体积代价（常见为 1–3 MB／字重）对单页站点并不划算。
+      </p>
+
+      <!-- 5 -->
+      <h2><span class="n">05</span>验证结果</h2>
+
+      <table>
+        <thead><tr><th>检查项</th><th>结果</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>横向溢出</td><td class="ok">通过</td><td>1440 / 390 下 <code>scrollWidth === clientWidth</code></td></tr>
+          <tr><td>文字对比度</td><td class="ok">通过</td><td>正文类元素实测 5.53–10.57:1，深色区 7.4:1</td></tr>
+          <tr><td>标题层级</td><td class="ok">通过</td><td>单一 H1，区块 H2，卡片 H3；信条段与结果段补为 H2</td></tr>
+          <tr><td>减少动效</td><td class="ok">通过</td><td><code>prefers-reduced-motion</code> 下内容全部可见（opacity 1），画布静态</td></tr>
+          <tr><td>无 JS 可读性</td><td class="ok">通过</td><td>文案在 HTML 中，指标显示终值而非 0</td></tr>
+          <tr><td>双语词条</td><td class="ok">通过</td><td>150 条 key 在 en / zh 中完全对齐，无缺失</td></tr>
+          <tr><td>默认语言</td><td class="ok">通过</td><td>默认英文；仅「主动切换」才写入记忆，不再按 <code>navigator.language</code> 猜测</td></tr>
+          <tr><td>键盘可达</td><td class="ok">通过</td><td>跳过链接、焦点环、标签页方向键、菜单焦点陷阱与 Esc 关闭</td></tr>
+          <tr><td>源体积</td><td class="ok">改善</td><td>约 395 KB → 132 KB（未压缩），运行时由 React 换为原生</td></tr>
+          <tr><td>中文 webfont</td><td class="ok">移除</td><td>不再请求 Noto SC，中文走系统字体</td></tr>
+        </tbody>
+      </table>
+
+      <h3>已知取舍</h3>
+      <ul>
+        <li><strong>法务页仍是占位。</strong>Privacy / Terms / Compliance / Accessibility 没有对应页面，现改为无链接占位项（点线下划），不再误导点击；补齐页面后换成真实链接即可。</li>
+        <li><strong>期刊条目为单页锚点。</strong>原站就没有文章页，本次保持跳转到期刊区，但卡片本身获得了完整的悬停与焦点态，后续接路由不影响结构。</li>
+        <li><strong>表单为前端演示。</strong>提交逻辑预留了 <code>setTimeout</code> 位置，接入真实端点时替换为 <code>fetch()</code>；成功 / 失败 / 校验三态已就位。</li>
+      </ul>
+
+      <footer>
+        <span>Singularity · UI v2</span>
+        <span>index.html · styles.css · app.js</span>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,48 +1,71 @@
-# Singularity — Bilingual (中文 / English)
+# Singularity — UI v2
 
-A bilingual (EN ⇄ 中文) version of [yan7770.github.io/singularity](https://yan7770.github.io/singularity/), rebuilt as a static site with a non-invasive translation layer.
+对 `singularity-bilingual` 的全站 UI 优化版本。品牌语言（奶油纸底、Instrument Serif 编辑体标题、等宽微标签、墨绿强调）与全部功能逻辑保持不变，改动集中在**排版精度、状态反馈与动效一致性**。
 
-原站的中英双语版本。原站是 Vite + React 单页应用，本项目**未改动任何构建产物**，仅在其上叠加一层翻译引擎。
+- 完整的问题清单与优化说明见 [`ui-optimization-report.html`](./ui-optimization-report.html)
+- 无框架、无构建步骤：`index.html` + `styles.css` + `app.js`
 
-## 特性 / Features
-
-- **139 条词条全站覆盖** —— 首屏、科学、器械、流程、数据、遥测、日志、页脚
-- **原样可逆** —— 首次渲染时缓存英文原文，切回 EN 逐字还原，不依赖反向字典，不会残留
-- **三种匹配层级** —— 整块段落 / 逐词动画标题 / 节点内碎片文本
-- **语言记忆** —— `localStorage` 持久化，支持 `?lang=zh` / `?lang=en` 直达
-- **中文字体** —— 补齐 Noto Serif SC / Noto Sans SC，修正等宽标签的中文回退
-- **响应式** —— 桌面与移动端（390px 起）均已校对
-
-## 目录结构 / Structure
-
-```
-.
-├── index.html          # 入口（相对路径，支持任意子目录部署）
-├── i18n.js             # 翻译层：词条表 + 文本节点替换 + 语言切换
-├── i18n.css            # 中文排版微调（字号 / 字距 / 字体回退）
-└── assets/
-    ├── app.js          # 原站构建产物（未改动）
-    └── app.css         # 原站构建产物（未改动）
-```
-
-## 本地运行 / Run locally
+## 运行
 
 ```bash
 python -m http.server 8321
-# 打开 http://127.0.0.1:8321/?lang=zh
+# http://127.0.0.1:8321/
+# 直接双击 index.html 也可（file:// 下功能完整）
 ```
 
-直接双击 `index.html` 也能打开（`file://` 下同样可用）。
+语言：**默认英文**。切换中文用头部开关或 `?lang=zh`；只有主动选择才会写入 `localStorage`（键 `singularity.lang.v2`），
+因此站点不会因为浏览器语言或历史自动检测而擅自变成中文。
 
-## 部署到 GitHub Pages
+## 目录
 
-1. 新建仓库并推送本目录
-2. Settings → Pages → Source 选择 `Deploy from a branch`，分支 `main`，目录 `/ (root)`
-3. 访问 `https://<用户名>.github.io/<仓库名>/`
+```
+.
+├── index.html                 语义化结构 + 英文原文（无 JS 也可读）
+├── styles.css                 令牌 / 组件 / 响应式 / 中英排印 / 降级
+├── app.js                     双语词条、滚动与状态、画布动画
+└── ui-optimization-report.html  优化说明（可直接打印）
+```
 
-## 致谢 / Credits
+## 设计令牌
 
-- 原站设计与实现：<https://yan7770.github.io/singularity/>
-- 字体：Instrument Serif、Inter、IBM Plex Mono、Noto Serif/Sans SC（Google Fonts）
+| 令牌 | 值 | 说明 |
+| --- | --- | --- |
+| `--ink` | `#0B0F10` | 主文字 |
+| `--ink-2` | `#33393B` | 次级文字（10.5:1） |
+| `--ink-3` | `#5B6366` | 辅助文字（5.53:1，原 `#6D7578` 仅 4.24:1） |
+| `--paper` | `#F4F3EF` | 纸底 |
+| `--surface` | `#FAF9F5` | 抬升面 |
+| `--accent` | `#0C6E63` | 强调（深色区提亮为 `#5CBCAE`） |
+| `--d-fast/mid/slow` | `180 / 380 / 720ms` | 动效三档 |
+| `--ease` | `cubic-bezier(.22,.61,.36,1)` | 统一缓动 |
 
-本项目仅做语言层适配，原始设计与文案版权归原作者所有。
+深色区块只重声明上述颜色令牌（`.section--dark`），组件本身不写第二套深色规则。
+
+## 字体
+
+只加载拉丁字族：Instrument Serif、Inter（300/400/500）、IBM Plex Mono（400/500）。
+中文使用系统字体栈（PingFang SC / Hiragino Sans GB / Microsoft YaHei / Songti SC），不再请求 Noto Serif SC / Noto Sans SC —— 单页站点为此付出的体积代价过高。
+
+## 交互逻辑清单
+
+- 语言切换：`data-i18n` / `data-i18n-html` / `data-i18n-attr` 三种挂载方式，150 条 key 中英对齐
+- 导航：锚点滚动 + 当前区块自动标记
+- 遥测标签：`role=tablist`，方向键 / Home / End 切换，三组指标与波形同步
+- 表单：邮箱校验（必填 / 格式）→ 发送中 → 成功；错误就近显示并 `aria-live` 播报
+- 画布：事件视界图版与心电波形，离屏暂停，DPR 上限 2
+- 无障碍：跳过链接、焦点环、菜单焦点陷阱 + Esc、`prefers-reduced-motion` 全量降级
+
+## 接入真实表单
+
+`app.js` 中 `initForm()` 内的 `setTimeout` 即提交位置，替换为：
+
+```js
+const res = await fetch("/api/introductions", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ email, ref })
+});
+if (!res.ok) throw new Error("request failed");
+```
+
+失败分支已预留文案 `s7.fail`（中英各一份），只需在 `catch` 中输出。

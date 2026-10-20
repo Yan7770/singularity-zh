@@ -1,31 +1,685 @@
 <!doctype html>
 <html lang="en" data-lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Singularity — The End of Approximation</title>
     <meta
       name="description"
-      content="Singularity is a private medical practice built on total-resolution diagnostics: whole-genome sequencing, continuous physiology, and a single physician accountable for every variable."
+      content="Singularity is a private medical practice built on total-resolution diagnostics: whole-genome sequencing, continuous physiology, and one physician accountable for every variable in your body."
     />
     <meta name="theme-color" content="#F4F3EF" />
+    <meta name="color-scheme" content="light" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./assets/app.css" />
-    <link rel="stylesheet" href="./i18n.css" />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script src="./assets/app.js" defer></script>
-    <script src="./i18n.js" defer></script>
+    <a class="skip-link" href="#main" data-i18n="a11y.skip">Skip to content</a>
+
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-mark" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.2" />
+        <circle cx="10.4" cy="11.2" r="2.3" fill="currentColor" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 16 16">
+        <path d="M4.4 11.6 11.6 4.4M5.6 4.4h6v6" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 16 16">
+        <path d="M3.2 8.4 6.4 11.4 12.8 4.9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 16 16">
+        <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 16 16">
+        <path d="M8 3.4v9.2M3.4 8h9.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-up" viewBox="0 0 16 16">
+        <path d="M8 12.6V3.4M4 7.4 8 3.4l4 4" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+    </svg>
+
+    <header class="site-header" data-header>
+      <div class="shell header-inner">
+        <a class="brand" href="#top" aria-label="Singularity — home" data-i18n-attr="aria-label|a11y.home">
+          <svg class="brand-mark" aria-hidden="true"><use href="#i-mark" /></svg>
+          <span class="brand-word">singularity</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary" data-i18n-attr="aria-label|a11y.primaryNav">
+          <ul>
+            <li><a href="#science" data-nav="science" data-i18n="nav.science">Science</a></li>
+            <li><a href="#instruments" data-nav="instruments" data-i18n="nav.instruments">Instruments</a></li>
+            <li><a href="#protocol" data-nav="protocol" data-i18n="nav.protocol">Protocol</a></li>
+            <li><a href="#journal" data-nav="journal" data-i18n="nav.journal">Journal</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-tools">
+          <div class="lang-switch" role="group" aria-label="Language" data-i18n-attr="aria-label|a11y.lang">
+            <button type="button" data-lang-btn="en" aria-pressed="true">EN</button>
+            <button type="button" data-lang-btn="zh" aria-pressed="false">中文</button>
+          </div>
+          <a class="btn btn--primary btn--sm header-cta" href="#access" data-i18n="cta.request">Request an introduction</a>
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+            <svg class="icon-open" aria-hidden="true"><use href="#i-plus" /></svg>
+            <svg class="icon-close" aria-hidden="true"><use href="#i-close" /></svg>
+            <span class="sr-only" data-i18n="a11y.openMenu">Open menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="menu" id="menu" hidden data-menu>
+      <div class="menu-inner">
+        <nav aria-label="Mobile" class="menu-nav" data-i18n-attr="aria-label|a11y.mobileNav">
+          <a href="#science"><span class="menu-idx">01</span><span data-i18n="nav.science">Science</span></a>
+          <a href="#instruments"><span class="menu-idx">02</span><span data-i18n="nav.instruments">Instruments</span></a>
+          <a href="#protocol"><span class="menu-idx">03</span><span data-i18n="nav.protocol">Protocol</span></a>
+          <a href="#journal"><span class="menu-idx">04</span><span data-i18n="nav.journal">Journal</span></a>
+        </nav>
+        <a class="btn btn--primary menu-cta" href="#access" data-i18n="cta.request">Request an introduction</a>
+        <div class="menu-foot">
+          <p class="menu-label" data-i18n="footer.studio">Zürich · Shanghai · New York</p>
+          <a class="menu-mail" href="mailto:office@singularity.health">office@singularity.health</a>
+        </div>
+      </div>
+    </div>
+
+    <main id="main">
+      <!-- ───────────────────────────── HERO ───────────────────────────── -->
+      <section class="hero" id="top">
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow reveal" data-i18n="hero.eyebrow">
+              <span class="dot"></span>Private medical practice — Est. 2031
+            </p>
+
+            <h1 class="display reveal" data-i18n-html="hero.title">
+              The end of<br /><em>approximation.</em>
+            </h1>
+
+            <p class="lede reveal" data-i18n="hero.deck">
+              Singularity is a private medical practice built on total-resolution diagnostics: whole-genome
+              sequencing, continuous physiology, and one physician accountable for every variable in your body.
+            </p>
+
+            <div class="hero-actions reveal">
+              <a class="btn btn--primary" href="#access">
+                <span data-i18n="cta.request">Request an introduction</span>
+                <svg class="btn-arrow" aria-hidden="true"><use href="#i-arrow" /></svg>
+              </a>
+              <a class="btn btn--ghost" href="#protocol">
+                <span data-i18n="cta.protocol">See the protocol</span>
+                <svg class="btn-arrow" aria-hidden="true"><use href="#i-arrow" /></svg>
+              </a>
+            </div>
+
+            <p class="hero-meta reveal" data-i18n="hero.meta">
+              By referral only · 240 members · 11 physicians
+            </p>
+          </div>
+
+          <div class="hero-plate reveal" aria-hidden="true">
+            <div class="plate">
+              <canvas class="plate-canvas" data-plate></canvas>
+              <span class="plate-title" data-i18n="plate.title">Plate 01 · Event horizon</span>
+              <span class="plate-l tag-r1">λ 632.8 nm</span>
+              <span class="plate-l tag-l">res 0.4 μm</span>
+              <span class="plate-l tag-r2">Δ 12 ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="shell">
+          <dl class="hero-stats reveal">
+            <div class="stat">
+              <dt data-i18n="hero.stat1.label">Imaging resolution</dt>
+              <dd><span class="num" data-count="0.4" data-dec="1">0.4</span><span class="unit">μm</span></dd>
+            </div>
+            <div class="stat">
+              <dt data-i18n="hero.stat2.label">Sequenced per member</dt>
+              <dd><span class="num" data-count="3.2" data-dec="1">3.2</span><span class="unit">Gb</span></dd>
+            </div>
+            <div class="stat">
+              <dt data-i18n="hero.stat3.label">Physiological latency</dt>
+              <dd><span class="num" data-count="12">12</span><span class="unit">ms</span></dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────── AFFILIATIONS ─────────────────────── -->
+      <section class="marquee" aria-label="Research affiliations" data-i18n-attr="aria-label|a11y.affiliations">
+        <div class="marquee-track" data-marquee>
+          <ul class="marquee-list">
+            <li>ETH Zürich</li>
+            <li>Broad Institute</li>
+            <li>Karolinska Institutet</li>
+            <li>RIKEN</li>
+            <li>Max Planck Society</li>
+            <li>Wellcome Sanger Institute</li>
+            <li>Chan Zuckerberg Biohub</li>
+            <li>Institut Pasteur</li>
+          </ul>
+          <ul class="marquee-list" aria-hidden="true">
+            <li>ETH Zürich</li>
+            <li>Broad Institute</li>
+            <li>Karolinska Institutet</li>
+            <li>RIKEN</li>
+            <li>Max Planck Society</li>
+            <li>Wellcome Sanger Institute</li>
+            <li>Chan Zuckerberg Biohub</li>
+            <li>Institut Pasteur</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── DOCTRINE ────────────────────────── -->
+      <section class="section section--doctrine" id="science">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">01</span><span data-i18n="s1.eyebrow">Doctrine</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s1.meta">Zürich · MMXXXI</p>
+          </div>
+
+          <h2 class="statement" data-reveal-words data-i18n="s1.statement">
+            Medicine has spent a century describing the average patient. We were built to resolve the
+            individual — one body, measured without interruption, understood without remainder.
+          </h2>
+
+          <div class="doctrine-grid">
+            <article class="doctrine-col reveal">
+              <h3 class="col-label" data-i18n="s1.c1.label">Definition</h3>
+              <p data-i18n="s1.c1.body">
+                A singularity is the point at which a function stops behaving incrementally — where
+                resolution becomes absolute rather than proportional.
+              </p>
+              <p class="doctrine-note" data-i18n="s1.c1.note">
+                We took the word as an obligation, not a metaphor.
+              </p>
+            </article>
+
+            <article class="doctrine-col reveal" style="--rd: 90ms">
+              <h3 class="col-label" data-i18n="s1.c2.label">Practice</h3>
+              <p data-i18n="s1.c2.body">
+                Founded 2031. Eleven physicians. Two hundred and forty members. No insurance accepted, no
+                volume model, no queue.
+              </p>
+            </article>
+
+            <article class="doctrine-col reveal" style="--rd: 180ms">
+              <h3 class="col-label" data-i18n="s1.c3.label">Mandate</h3>
+              <p data-i18n="s1.c3.body">
+                To know one body as completely as medicine currently allows — and then to keep knowing it.
+              </p>
+              <p class="signature">
+                <span class="signature-name">Elias Roth</span>
+                <span class="signature-role" data-i18n="s1.c3.role">Chief physician</span>
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────── INSTRUMENTS ──────────────────────── -->
+      <section class="section section--instruments" id="instruments">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">02</span><span data-i18n="s2.eyebrow">Instruments</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s2.meta">Four systems</p>
+          </div>
+
+          <div class="split-head">
+            <h2 class="h2 reveal" data-i18n-html="s2.title">
+              Four instruments.<br /><em>One body.</em>
+            </h2>
+            <p class="split-note reveal" data-i18n="s2.note">
+              None of this is a device subscription. Each instrument exists to remove one specific kind of
+              uncertainty — and to leave nothing that requires your interpretation.
+            </p>
+          </div>
+
+          <ul class="card-grid">
+            <li class="card reveal">
+              <div class="card-top">
+                <span class="card-idx">/ 01</span>
+                <svg class="card-icon" viewBox="0 0 28 28" aria-hidden="true">
+                  <path d="M14 5v18M8 14h12M6 9c3 0 5 2 5 5M22 19c-3 0-5-2-5-5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3 class="card-title" data-i18n="s2.c1.title">Genome, whole</h3>
+              <p class="card-body" data-i18n="s2.c1.body">
+                3.2 gigabases read at 60× depth, re-annotated each quarter against the full literature and every
+                prior report we hold on you.
+              </p>
+              <p class="card-meta" data-i18n="s2.c1.meta">3.2 Gb · 60× depth</p>
+            </li>
+
+            <li class="card reveal" style="--rd: 80ms">
+              <div class="card-top">
+                <span class="card-idx">/ 02</span>
+                <svg class="card-icon" viewBox="0 0 28 28" aria-hidden="true">
+                  <path d="M4 15h4l2.5-7 3 14 3-16 2.5 9h5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <h3 class="card-title" data-i18n="s2.c2.title">Physiology, continuous</h3>
+              <p class="card-body" data-i18n="s2.c2.body">
+                A clinical-grade array reads 1,400 signals a day. Your physician sees the deviation long before
+                you would feel it.
+              </p>
+              <p class="card-meta" data-i18n="s2.c2.meta">1,400 signals · daily</p>
+            </li>
+
+            <li class="card reveal" style="--rd: 160ms">
+              <div class="card-top">
+                <span class="card-idx">/ 03</span>
+                <svg class="card-icon" viewBox="0 0 28 28" aria-hidden="true">
+                  <ellipse cx="14" cy="14" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="1.1" />
+                  <circle cx="14" cy="14" r="2.4" fill="none" stroke="currentColor" stroke-width="1.1" />
+                </svg>
+              </div>
+              <h3 class="card-title" data-i18n="s2.c3.title">Imaging, sub-cellular</h3>
+              <p class="card-body" data-i18n="s2.c3.body">
+                0.4 μm magnetic and opto-acoustic imaging, read independently by two radiologists and one model,
+                then reconciled.
+              </p>
+              <p class="card-meta" data-i18n="s2.c3.meta">0.4 μm · sub-cellular</p>
+            </li>
+
+            <li class="card reveal" style="--rd: 240ms">
+              <div class="card-top">
+                <span class="card-idx">/ 04</span>
+                <svg class="card-icon" viewBox="0 0 28 28" aria-hidden="true">
+                  <path d="M14 6a5 5 0 0 1 5 5c0 3-3 7-5 9-2-2-5-6-5-9a5 5 0 0 1 5-5Z" fill="none" stroke="currentColor" stroke-width="1.1" />
+                </svg>
+              </div>
+              <h3 class="card-title" data-i18n="s2.c4.title">Reasoning, clinical</h3>
+              <p class="card-body" data-i18n="s2.c4.body">
+                One physician holds the entire record. Not a portal, not a dashboard — a person who knows the
+                shape of your baseline.
+              </p>
+              <p class="card-meta" data-i18n="s2.c4.meta">1 physician · 22 members</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── PROTOCOL ────────────────────────── -->
+      <section class="section section--protocol" id="protocol">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">03</span><span data-i18n="s3.eyebrow">The protocol</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s3.meta">12 weeks</p>
+          </div>
+
+          <div class="protocol-grid">
+            <div class="protocol-aside">
+              <div class="protocol-sticky">
+                <h2 class="h2 reveal" data-i18n-html="s3.title">Twelve weeks<br /><em>to a baseline.</em></h2>
+                <p class="lede lede--sm reveal" data-i18n="s3.note">
+                  Membership begins with measurement, not with treatment. We do not accept a member we cannot
+                  first describe completely.
+                </p>
+
+              <dl class="spec-list reveal">
+                <div><dt data-i18n="s3.spec1">Residency</dt><dd data-i18n="s3.spec1.v">4 days</dd></div>
+                <div><dt data-i18n="s3.spec2">Data points</dt><dd data-i18n="s3.spec2.v">2.8 M</dd></div>
+                <div><dt data-i18n="s3.spec3">Recalibration</dt><dd data-i18n="s3.spec3.v">Quarterly</dd></div>
+              </dl>
+              </div>
+            </div>
+
+          <ol class="steps">
+            <li class="step reveal">
+              <span class="step-node" aria-hidden="true"></span>
+              <div class="step-head">
+                <span class="step-idx">01</span>
+                <span class="step-when" data-i18n="s3.st1.when">Days 1–4</span>
+              </div>
+              <h3 class="step-title" data-i18n="s3.st1.title">Baseline</h3>
+              <p class="step-body" data-i18n="s3.st1.body">
+                Four days in residence at Zürich or Shanghai. Forty blood draws across one circadian cycle, an
+                uninterrupted imaging session, and a full neurocognitive map.
+              </p>
+            </li>
+
+            <li class="step reveal">
+              <span class="step-node" aria-hidden="true"></span>
+              <div class="step-head">
+                <span class="step-idx">02</span>
+                <span class="step-when" data-i18n="s3.st2.when">Weeks 2–5</span>
+              </div>
+              <h3 class="step-title" data-i18n="s3.st2.title">Model</h3>
+              <p class="step-body" data-i18n="s3.st2.body">
+                We build a physiological twin — a simulated body calibrated to your data. Every intervention is
+                tested against the model before it is ever offered to you.
+              </p>
+            </li>
+
+            <li class="step reveal">
+              <span class="step-node" aria-hidden="true"></span>
+              <div class="step-head">
+                <span class="step-idx">03</span>
+                <span class="step-when" data-i18n="s3.st3.when">Weeks 6–12</span>
+              </div>
+              <h3 class="step-title" data-i18n="s3.st3.title">Intervention</h3>
+              <p class="step-body" data-i18n="s3.st3.body">
+                Therapeutics, nutrition, sleep architecture, surgical referral. Each decision is made against
+                your model, never against the population mean.
+              </p>
+            </li>
+
+            <li class="step reveal">
+              <span class="step-node" aria-hidden="true"></span>
+              <div class="step-head">
+                <span class="step-idx">04</span>
+                <span class="step-when" data-i18n="s3.st4.when">Ongoing</span>
+              </div>
+              <h3 class="step-title" data-i18n="s3.st4.title">Continuity</h3>
+              <p class="step-body" data-i18n="s3.st4.body">
+                Quarterly recalibration, twenty-four-hour physician access, and a standing review of every new
+                finding that touches your genome.
+              </p>
+            </li>
+          </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── TELEMETRY ───────────────────────── -->
+      <section class="section section--dark" id="telemetry" data-theme="dark">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">04</span><span data-i18n="s4.eyebrow">Telemetry</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s4.meta">Continuous</p>
+          </div>
+
+          <div class="telemetry-grid">
+            <div class="telemetry-copy">
+              <h2 class="h2 reveal" data-i18n-html="s4.title">
+                A practice that<br /><em>never stops measuring.</em>
+              </h2>
+              <p class="lede lede--sm reveal" data-i18n="s4.note">
+                The instruments leave the clinic with you. Between visits, 1,400 signals a day arrive at your
+                physician’s desk — not at an app you are expected to interpret.
+              </p>
+
+              <div class="tabs reveal" role="tablist" aria-label="Signal source" data-tabs data-i18n-attr="aria-label|a11y.tabs">
+                <button type="button" role="tab" id="tab-cardiac" aria-selected="true" aria-controls="panel-telemetry" data-tab="cardiac" data-i18n="s4.tab1">Cardiac</button>
+                <button type="button" role="tab" id="tab-metabolic" aria-selected="false" aria-controls="panel-telemetry" data-tab="metabolic" tabindex="-1" data-i18n="s4.tab2">Metabolic</button>
+                <button type="button" role="tab" id="tab-neural" aria-selected="false" aria-controls="panel-telemetry" data-tab="neural" tabindex="-1" data-i18n="s4.tab3">Neural</button>
+              </div>
+              <p class="tabs-note reveal" data-tab-source>Lead II · 500 Hz</p>
+            </div>
+
+            <div class="monitor reveal" id="panel-telemetry" role="tabpanel" aria-labelledby="tab-cardiac" tabindex="0">
+              <div class="monitor-bar">
+                <span class="pulse"><span class="pulse-dot"></span><span data-i18n="s4.live">Live · member 0192</span></span>
+                <span class="monitor-loc" data-i18n="s4.loc">Zürich</span>
+              </div>
+
+              <div class="monitor-chart">
+                <canvas data-ecg></canvas>
+              </div>
+
+              <dl class="monitor-metrics" data-metrics>
+                <div><dt>Resting rate</dt><dd><span data-m="0.v">54</span><span class="unit" data-m="0.u">bpm</span></dd></div>
+                <div><dt>Variability</dt><dd><span data-m="1.v">68</span><span class="unit" data-m="1.u">ms</span></dd></div>
+                <div><dt>Saturation</dt><dd><span data-m="2.v">99</span><span class="unit" data-m="2.u">%</span></dd></div>
+                <div><dt>Pressure</dt><dd><span data-m="3.v">112/68</span><span class="unit" data-m="3.u">mmHg</span></dd></div>
+              </dl>
+
+              <div class="monitor-foot">
+                <span data-i18n="s4.quality">Signal quality 99.4%</span>
+                <a href="#journal" class="link-arrow"><span data-i18n="s4.open">Open record</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── OUTCOMES ────────────────────────── -->
+      <section class="section section--outcomes" id="outcomes">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">05</span><span data-i18n="s5.eyebrow">Outcomes</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s5.meta">Cohort 2029–2035</p>
+          </div>
+
+          <h2 class="h2 h2--wide reveal" data-i18n-html="s5.title">
+            The result of measuring properly is not more data. It is <em>time.</em>
+          </h2>
+
+          <ul class="metric-grid">
+            <li class="reveal">
+              <p class="metric-value"><span class="num" data-count="240">240</span><span class="unit" data-i18n="s5.u1">members</span></p>
+              <p class="metric-label" data-i18n="s5.l1">By referral</p>
+              <p class="metric-note" data-i18n="s5.n1">Forty new members a year. Never more.</p>
+            </li>
+            <li class="reveal" style="--rd: 80ms">
+              <p class="metric-value"><span class="num" data-count="0.4" data-dec="1">0.4</span><span class="unit">μm</span></p>
+              <p class="metric-label" data-i18n="s5.l2">Imaging</p>
+              <p class="metric-note" data-i18n="s5.n2">Sub-cellular resolution, read twice.</p>
+            </li>
+            <li class="reveal" style="--rd: 160ms">
+              <p class="metric-value"><span class="num" data-count="3.1" data-dec="1">3.1</span><span class="unit">×</span></p>
+              <p class="metric-label" data-i18n="s5.l3">Earlier detection</p>
+              <p class="metric-note" data-i18n="s5.n3">Versus standard annual care, cohort 2029–2035.</p>
+            </li>
+            <li class="reveal" style="--rd: 240ms">
+              <p class="metric-value"><span class="num" data-count="24">24</span><span class="unit" data-i18n="s5.u4">hours</span></p>
+              <p class="metric-label" data-i18n="s5.l4">Physician access</p>
+              <p class="metric-note" data-i18n="s5.n4">Direct line. No triage, no queue.</p>
+            </li>
+          </ul>
+
+          <p class="fineprint reveal" data-i18n="s5.disclaimer">
+            Figures drawn from internal longitudinal records. Outcomes are individual; no clinical result is
+            guaranteed or implied.
+          </p>
+        </div>
+      </section>
+
+      <!-- ───────────────────────────── JOURNAL ────────────────────────── -->
+      <section class="section section--journal" id="journal">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">06</span><span data-i18n="s6.eyebrow">Journal</span></p>
+            <a class="eyebrow eyebrow--link" href="#journal">
+              <span data-i18n="s6.all">All entries</span>
+              <svg aria-hidden="true"><use href="#i-arrow" /></svg>
+            </a>
+          </div>
+
+          <ul class="journal-grid">
+            <li class="post reveal">
+              <a href="#journal" class="post-link">
+                <span class="post-thumb post-thumb--rings" aria-hidden="true"></span>
+                <span class="post-kicker"><span data-i18n="s6.c1.cat">Research</span><span class="sep">·</span><span data-i18n="s6.c1.time">8 min</span></span>
+                <span class="post-title" data-i18n="s6.c1.title">On the arithmetic of early detection</span>
+                <span class="post-foot">
+                  <span data-i18n="s6.c1.date">March 2036</span>
+                  <span class="post-read"><span data-i18n="s6.read">Read</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
+                </span>
+              </a>
+            </li>
+
+            <li class="post reveal" style="--rd: 90ms">
+              <a href="#journal" class="post-link">
+                <span class="post-thumb post-thumb--lines" aria-hidden="true"></span>
+                <span class="post-kicker"><span data-i18n="s6.c2.cat">Practice</span><span class="sep">·</span><span data-i18n="s6.c2.time">5 min</span></span>
+                <span class="post-title" data-i18n="s6.c2.title">Why we refuse to scale</span>
+                <span class="post-foot">
+                  <span data-i18n="s6.c2.date">January 2036</span>
+                  <span class="post-read"><span data-i18n="s6.read">Read</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
+                </span>
+              </a>
+            </li>
+
+            <li class="post reveal" style="--rd: 180ms">
+              <a href="#journal" class="post-link">
+                <span class="post-thumb post-thumb--dots" aria-hidden="true"></span>
+                <span class="post-kicker"><span data-i18n="s6.c3.cat">Protocol</span><span class="sep">·</span><span data-i18n="s6.c3.time">12 min</span></span>
+                <span class="post-title" data-i18n="s6.c3.title">The physiology of a single day</span>
+                <span class="post-foot">
+                  <span data-i18n="s6.c3.date">November 2035</span>
+                  <span class="post-read"><span data-i18n="s6.read">Read</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────── QUOTE ─────────────────────────── -->
+      <section class="quote">
+        <div class="shell">
+          <figure class="reveal">
+            <figcaption class="eyebrow quote-kicker" data-i18n="q.kicker">From the membership</figcaption>
+            <blockquote data-i18n-html="q.text">
+              “Eleven years of annual physicals had walked past it. Singularity found it in the first <em>four days.</em>”
+            </blockquote>
+            <p class="quote-meta" data-i18n="q.meta">Member 0141 · 44 · Joined 2034</p>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── MEMBERSHIP ──────────────────────── -->
+      <section class="section section--access" id="access">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow"><span class="num-idx">07</span><span data-i18n="s7.eyebrow">Membership</span></p>
+            <p class="eyebrow eyebrow--right" data-i18n="s7.meta">By referral</p>
+          </div>
+
+          <div class="access-card">
+            <div class="access-copy">
+              <h2 class="h2 reveal" data-i18n-html="s7.title">Request an<br /><em>introduction.</em></h2>
+              <p class="lede lede--sm reveal" data-i18n="s7.note">
+                We accept forty members a year. Introductions are made by an existing member or by your
+                physician — never by application alone.
+              </p>
+
+              <ul class="check-list reveal">
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span data-i18n="s7.p1">Four days in residence, Zürich or Shanghai</span></li>
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span data-i18n="s7.p2">A single named physician for the duration</span></li>
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span data-i18n="s7.p3">No insurance, no billing department, no queue</span></li>
+              </ul>
+
+              <p class="cities reveal" data-i18n="s7.cities">Zürich · Shanghai · New York</p>
+            </div>
+
+            <div class="access-form-wrap">
+              <form class="access-form" data-form novalidate>
+                <div class="field">
+                  <label for="email" data-i18n="s7.f1">Email address</label>
+                  <input id="email" name="email" type="email" autocomplete="email" placeholder="you@domain.com" aria-describedby="email-error" data-i18n-attr="placeholder|s7.f1.ph" />
+                  <p class="field-error" id="email-error" data-error-for="email" role="alert"></p>
+                </div>
+
+                <div class="field">
+                  <label for="ref" data-i18n="s7.f2">Referred by — optional</label>
+                  <input id="ref" name="ref" type="text" autocomplete="off" placeholder="Member name or physician" data-i18n-attr="placeholder|s7.f2.ph" />
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn btn--primary" type="submit" data-submit>
+                    <span class="btn-label" data-i18n="s7.submit">Submit request</span>
+                    <span class="btn-spinner" aria-hidden="true"></span>
+                    <svg class="btn-arrow" aria-hidden="true"><use href="#i-arrow" /></svg>
+                  </button>
+                  <p class="reply-note"><span data-i18n="s7.reply">Reply within</span><strong data-i18n="s7.reply.v">two business days</strong></p>
+                </div>
+
+                <p class="form-status" data-status role="status" aria-live="polite"></p>
+
+                <p class="fineprint fineprint--tight" data-i18n="s7.disclaimer">
+                  This form is a request for contact, not a medical intake. No clinical information should be
+                  submitted here.
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a class="brand" href="#top" aria-label="Singularity — home" data-i18n-attr="aria-label|a11y.home">
+              <svg class="brand-mark" aria-hidden="true"><use href="#i-mark" /></svg>
+              <span class="brand-word">singularity</span>
+            </a>
+            <p class="footer-desc" data-i18n="footer.desc">
+              A private medical practice built on total-resolution diagnostics. By referral only.
+            </p>
+            <address class="footer-address">
+              <span data-i18n="footer.addr1">Bahnhofstrasse 42</span>
+              <span data-i18n="footer.addr2">8001 Zürich, Switzerland</span>
+              <a href="mailto:office@singularity.health">office@singularity.health</a>
+            </address>
+          </div>
+
+          <nav class="footer-nav" aria-label="Footer" data-i18n-attr="aria-label|a11y.footerNav">
+            <div class="footer-col">
+              <h2 class="col-label" data-i18n="footer.h1">Practice</h2>
+              <ul>
+                <li><a href="#science" data-i18n="nav.science">Science</a></li>
+                <li><a href="#instruments" data-i18n="nav.instruments">Instruments</a></li>
+                <li><a href="#protocol" data-i18n="nav.protocol">Protocol</a></li>
+                <li><a href="#journal" data-i18n="nav.journal">Journal</a></li>
+              </ul>
+            </div>
+            <div class="footer-col">
+              <h2 class="col-label" data-i18n="footer.h2">Access</h2>
+              <ul>
+                <li><a href="#access" data-i18n="footer.membership">Membership</a></li>
+                <li><a href="#science" data-i18n="footer.physicians">Physicians</a></li>
+                <li><a href="#protocol" data-i18n="footer.residencies">Residencies</a></li>
+                <li><a href="#access" data-i18n="footer.contact">Contact</a></li>
+              </ul>
+            </div>
+            <div class="footer-col">
+              <h2 class="col-label" data-i18n="footer.h3">Legal</h2>
+              <ul>
+                <li><span class="footer-pending" data-i18n="footer.privacy">Privacy</span></li>
+                <li><span class="footer-pending" data-i18n="footer.terms">Terms</span></li>
+                <li><span class="footer-pending" data-i18n="footer.compliance">Compliance</span></li>
+                <li><span class="footer-pending" data-i18n="footer.access">Accessibility</span></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <div class="footer-mark">
+          <span class="eyebrow" data-i18n="footer.entity">Singularity Medical AG</span>
+          <a class="back-top eyebrow" href="#top">
+            <span data-i18n="footer.backTop">Back to top</span>
+            <svg aria-hidden="true"><use href="#i-up" /></svg>
+          </a>
+        </div>
+
+        <div class="footer-wordmark" aria-hidden="true">singularity</div>
+
+        <div class="footer-bottom">
+          <p>© 2036 Singularity Medical AG</p>
+          <p data-i18n="footer.rights">All rights reserved · Made in Zürich</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js" defer></script>
   </body>
 </html>
