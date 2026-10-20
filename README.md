@@ -28,23 +28,39 @@ python -m http.server 8321
 
 ## 设计令牌
 
-| 令牌 | 值 | 说明 |
+| 令牌 | 值 | 角色 |
 | --- | --- | --- |
-| `--ink` | `#0B0F10` | 主文字 |
-| `--ink-2` | `#33393B` | 次级文字（10.5:1） |
-| `--ink-3` | `#5B6366` | 辅助文字（5.53:1，原 `#6D7578` 仅 4.24:1） |
-| `--paper` | `#F4F3EF` | 纸底 |
-| `--surface` | `#FAF9F5` | 抬升面 |
-| `--accent` | `#0C6E63` | 强调（深色区提亮为 `#5CBCAE`） |
-| `--d-fast/mid/slow` | `180 / 380 / 720ms` | 动效三档 |
+| `--paper` | `#F5EFEA` | 柔奶白，纸底 |
+| `--ink` | `#113056` | 捣蓝色，正文与深色区底 |
+| `--ink-3` | `#57667C` | 辅助文字（5.12:1） |
+| `--accent` | `#122E8A` | 深海蓝，按钮/结构强调 |
+| `--tint` | `#91CFD5` | 清水蓝，浅色块与波形 |
+| `--signal` | `#E93F80` | 甜酷粉，仅用于圆点与指示 |
+| `--obsidian` | `#1E1E22` | 黑曜石，设备面板底 |
+| `--d-fast/mid/slow/xslow` | `180 / 380 / 720 / 1200ms` | 动效四档 |
 | `--ease` | `cubic-bezier(.22,.61,.36,1)` | 统一缓动 |
+
+甜酷粉在纸底上仅 3.36:1，**不承载文字**；表单报错用压深版 `#C2185B`（5.13:1）。清水蓝同理，只作底色与图形。
 
 深色区块只重声明上述颜色令牌（`.section--dark`），组件本身不写第二套深色规则。
 
 ## 字体
 
-只加载拉丁字族：Instrument Serif、Inter（300/400/500）、IBM Plex Mono（400/500）。
-中文使用系统字体栈（PingFang SC / Hiragino Sans GB / Microsoft YaHei / Songti SC），不再请求 Noto Serif SC / Noto Sans SC —— 单页站点为此付出的体积代价过高。
+拉丁：Instrument Serif（标题）、Inter（300/400/500）、IBM Plex Mono（400/500）。
+中文标题：Noto Serif SC（400/500），由 Google Fonts 按 unicode-range 切片，只下载页面用到的分片；中文正文仍走系统黑体，不为正文背字库。
+
+## 动效
+
+全部基于 transform / opacity / clip-path，只触发合成层。
+
+- 标题逐行擦入（clip-path，980ms，行间 90ms）
+- 区块细线从左绘制（900ms）
+- 首屏图版视差 + 文案退场（rAF 节流，系数 0.08）
+- 流程步骤随滚动标记当前位置
+- 遥测标签切换淡出换值再淡入
+- 页脚字标从基线下方升起（1200ms）
+- 语言切换整页交叉淡化（View Transitions API，不支持时降级为直接切换）
+- `prefers-reduced-motion` 下全部瞬时完成、内容保持可见
 
 ## 交互逻辑清单
 

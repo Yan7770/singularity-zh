@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap"
     />
 
     <link rel="stylesheet" href="./styles.css" />
@@ -104,16 +104,16 @@
               <span class="dot"></span>Private medical practice — Est. 2031
             </p>
 
-            <h1 class="display reveal" data-i18n-html="hero.title">
+            <h1 class="display reveal-lines" data-lines data-line-delay="120" data-i18n-html="hero.title">
               The end of<br /><em>approximation.</em>
             </h1>
 
-            <p class="lede reveal" data-i18n="hero.deck">
+            <p class="lede reveal" style="--rd: 330ms" data-i18n="hero.deck">
               Singularity is a private medical practice built on total-resolution diagnostics: whole-genome
               sequencing, continuous physiology, and one physician accountable for every variable in your body.
             </p>
 
-            <div class="hero-actions reveal">
+            <div class="hero-actions reveal" style="--rd: 430ms">
               <a class="btn btn--primary" href="#access">
                 <span data-i18n="cta.request">Request an introduction</span>
                 <svg class="btn-arrow" aria-hidden="true"><use href="#i-arrow" /></svg>
@@ -124,12 +124,12 @@
               </a>
             </div>
 
-            <p class="hero-meta reveal" data-i18n="hero.meta">
+            <p class="hero-meta reveal" style="--rd: 520ms" data-i18n="hero.meta">
               By referral only · 240 members · 11 physicians
             </p>
           </div>
 
-          <div class="hero-plate reveal" aria-hidden="true">
+          <div class="hero-plate reveal" style="--rd: 180ms" aria-hidden="true">
             <div class="plate">
               <canvas class="plate-canvas" data-plate></canvas>
               <span class="plate-title" data-i18n="plate.title">Plate 01 · Event horizon</span>
@@ -141,7 +141,7 @@
         </div>
 
         <div class="shell">
-          <dl class="hero-stats reveal">
+          <dl class="hero-stats reveal" style="--rd: 610ms">
             <div class="stat">
               <dt data-i18n="hero.stat1.label">Imaging resolution</dt>
               <dd><span class="num" data-count="0.4" data-dec="1">0.4</span><span class="unit">μm</span></dd>
@@ -240,7 +240,7 @@
           </div>
 
           <div class="split-head">
-            <h2 class="h2 reveal" data-i18n-html="s2.title">
+            <h2 class="h2 reveal-lines" data-lines data-i18n-html="s2.title">
               Four instruments.<br /><em>One body.</em>
             </h2>
             <p class="split-note reveal" data-i18n="s2.note">
@@ -325,7 +325,7 @@
           <div class="protocol-grid">
             <div class="protocol-aside">
               <div class="protocol-sticky">
-                <h2 class="h2 reveal" data-i18n-html="s3.title">Twelve weeks<br /><em>to a baseline.</em></h2>
+                <h2 class="h2 reveal-lines" data-lines data-i18n-html="s3.title">Twelve weeks<br /><em>to a baseline.</em></h2>
                 <p class="lede lede--sm reveal" data-i18n="s3.note">
                   Membership begins with measurement, not with treatment. We do not accept a member we cannot
                   first describe completely.
@@ -406,7 +406,7 @@
 
           <div class="telemetry-grid">
             <div class="telemetry-copy">
-              <h2 class="h2 reveal" data-i18n-html="s4.title">
+              <h2 class="h2 reveal-lines" data-lines data-i18n-html="s4.title">
                 A practice that<br /><em>never stops measuring.</em>
               </h2>
               <p class="lede lede--sm reveal" data-i18n="s4.note">
@@ -456,7 +456,7 @@
             <p class="eyebrow eyebrow--right" data-i18n="s5.meta">Cohort 2029–2035</p>
           </div>
 
-          <h2 class="h2 h2--wide reveal" data-i18n-html="s5.title">
+          <h2 class="h2 h2--wide reveal-lines" data-lines data-i18n-html="s5.title">
             The result of measuring properly is not more data. It is <em>time.</em>
           </h2>
 
@@ -564,7 +564,7 @@
 
           <div class="access-card">
             <div class="access-copy">
-              <h2 class="h2 reveal" data-i18n-html="s7.title">Request an<br /><em>introduction.</em></h2>
+              <h2 class="h2 reveal-lines" data-lines data-i18n-html="s7.title">Request an<br /><em>introduction.</em></h2>
               <p class="lede lede--sm reveal" data-i18n="s7.note">
                 We accept forty members a year. Introductions are made by an existing member or by your
                 physician — never by application alone.
@@ -671,7 +671,9 @@
           </a>
         </div>
 
-        <div class="footer-wordmark" aria-hidden="true">singularity</div>
+        <div class="wordmark-clip reveal">
+          <div class="footer-wordmark" aria-hidden="true">singularity</div>
+        </div>
 
         <div class="footer-bottom">
           <p>© 2036 Singularity Medical AG</p>

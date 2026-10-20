@@ -9,18 +9,23 @@
 
 :root {
   /* colour */
-  --ink: #0b0f10;
-  --ink-2: #33393b;
-  --ink-3: #5b6366; /* 5.5:1 on paper — AA for body text */
-  --paper: #f4f3ef;
-  --surface: #faf9f5;
-  --accent: #0c6e63;
-  --line: rgba(11, 15, 16, 0.14);
-  --line-soft: rgba(11, 15, 16, 0.08);
-  --line-strong: rgba(11, 15, 16, 0.28);
+  /* 捣蓝色 as ink, 柔奶白 as paper, 深海蓝 as the structural accent,
+     清水蓝 as a tint, 甜酷粉 as the only signal colour. */
+  --ink: #113056;
+  --ink-2: #2b3b55;
+  --ink-3: #57667c; /* 5.2:1 on paper — AA for body text */
+  --paper: #f5efea;
+  --surface: #faf6f2;
+  --accent: #122e8a;
+  --signal: #e93f80;
+  --tint: #91cfd5;
+  --obsidian: #1e1e22;
+  --line: rgba(17, 48, 86, 0.14);
+  --line-soft: rgba(17, 48, 86, 0.08);
+  --line-strong: rgba(17, 48, 86, 0.28);
 
   /* type */
-  --serif: "Instrument Serif", "Iowan Old Style", "Songti SC", "Noto Serif SC", "Source Han Serif SC", serif;
+  --serif: "Instrument Serif", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "Iowan Old Style", serif;
   --sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "SFMono-Regular", "PingFang SC", "Microsoft YaHei", ui-monospace, monospace;
 
@@ -42,6 +47,7 @@
   --d-fast: 180ms;
   --d-mid: 380ms;
   --d-slow: 720ms;
+  --d-xslow: 1200ms;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -194,15 +200,15 @@ em {
 
 /* Inverted theme: every component reads the same tokens. */
 .section--dark {
-  --ink: #f4f3ef;
-  --ink-2: rgba(244, 243, 239, 0.82);
-  --ink-3: rgba(244, 243, 239, 0.64);
-  --paper: #0b0f10;
-  --surface: #121718;
-  --accent: #5cbcae;
-  --line: rgba(244, 243, 239, 0.16);
-  --line-soft: rgba(244, 243, 239, 0.09);
-  --line-strong: rgba(244, 243, 239, 0.32);
+  --ink: #f5efea;
+  --ink-2: rgba(245, 239, 234, 0.84);
+  --ink-3: #91cfd5;
+  --paper: #113056;
+  --surface: #0d2646;
+  --accent: #91cfd5;
+  --line: rgba(145, 207, 213, 0.2);
+  --line-soft: rgba(145, 207, 213, 0.12);
+  --line-strong: rgba(145, 207, 213, 0.4);
   background: var(--paper);
   color: var(--ink);
 }
@@ -267,7 +273,7 @@ em {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--signal);
   flex: none;
 }
 
@@ -473,22 +479,16 @@ em {
   border-bottom: 1px solid transparent;
 }
 
-/* A frosted scrim that fades out at its lower edge — a hard-edged panel
-   used to leave a visible seam where a dark section began. */
+/* Opaque once scrolled. An earlier version feathered the lower edge with a
+   mask, which let dark-section headlines ghost through the bar; the border
+   below now marks the edge instead, and the colour itself transitions. */
 .site-header::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--paper) 92%, transparent) 0%,
-    color-mix(in srgb, var(--paper) 72%, transparent) 62%,
-    transparent 100%
-  );
-  -webkit-backdrop-filter: blur(12px) saturate(1.1);
-  backdrop-filter: blur(12px) saturate(1.1);
-  -webkit-mask-image: linear-gradient(180deg, #000 50%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 50%, transparent 100%);
+  /* Solid for most of its height so no copy ghosts through on the dark
+     section; the mask alone feathers the last ~8px into the page. */
+  background: var(--paper);
   opacity: 0;
   transition: opacity var(--d-mid) var(--ease);
   pointer-events: none;
@@ -503,13 +503,13 @@ em {
 }
 
 .site-header[data-on-dark="true"] {
-  --ink: #f4f3ef;
-  --ink-2: rgba(244, 243, 239, 0.8);
-  --ink-3: rgba(244, 243, 239, 0.62);
-  --paper: #0b0f10;
-  --line: rgba(244, 243, 239, 0.22);
-  --line-soft: rgba(244, 243, 239, 0.16);
-  --line-strong: rgba(244, 243, 239, 0.4);
+  --ink: #f5efea;
+  --ink-2: rgba(245, 239, 234, 0.8);
+  --ink-3: #91cfd5;
+  --paper: #113056;
+  --line: rgba(145, 207, 213, 0.24);
+  --line-soft: rgba(145, 207, 213, 0.16);
+  --line-strong: rgba(145, 207, 213, 0.42);
   color: var(--ink);
 }
 
@@ -752,8 +752,8 @@ em {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(58% 46% at 78% 46%, rgba(12, 110, 99, 0.05), transparent 70%),
-    radial-gradient(42% 40% at 8% 88%, rgba(12, 110, 99, 0.035), transparent 72%);
+  background: radial-gradient(58% 46% at 78% 46%, rgba(18, 46, 138, 0.06), transparent 70%),
+    radial-gradient(42% 40% at 8% 88%, rgba(145, 207, 213, 0.16), transparent 72%);
 }
 
 .hero-grid {
@@ -901,6 +901,8 @@ em {
 
 .marquee {
   border-block: 1px solid var(--line-soft);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
   padding-block: 0.9rem;
   overflow: hidden;
   background: color-mix(in srgb, var(--paper) 60%, transparent);
@@ -956,12 +958,26 @@ em {
 /* ── 10. Section heads ─────────────────────────────────────────────────── */
 
 .section-head {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: 1rem;
   padding-bottom: 1.1rem;
-  border-bottom: 1px solid var(--line);
   margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* The hairline is drawn, not painted: it grows from the left when the
+   block enters. Kept as a pseudo-element so the border cannot shimmer
+   during the sub-pixel scale. */
+.section-head::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  transform-origin: left center;
 }
 
 .section-head--flush {
@@ -979,11 +995,22 @@ em {
 }
 
 .doctrine-col {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
   padding-top: 1.4rem;
-  border-top: 1px solid var(--line-soft);
+}
+
+.doctrine-col::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--line-soft);
+  transform-origin: left center;
 }
 
 .doctrine-col p {
@@ -1049,6 +1076,7 @@ em {
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -1059,6 +1087,24 @@ em {
 
 .card:hover {
   background: var(--surface);
+}
+
+/* accent hairline grows along the top edge on hover */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  z-index: 1;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 560ms var(--ease-out);
+}
+
+.card:hover::before,
+.card:focus-within::before {
+  transform: scaleX(1);
 }
 
 .card-top {
@@ -1244,6 +1290,11 @@ em {
   line-height: 1.78;
   color: var(--ink-3);
   max-width: 34em;
+  transition: color 420ms var(--ease);
+}
+
+.step.is-active .step-body {
+  color: var(--ink-2);
 }
 
 /* ── 15. Telemetry ─────────────────────────────────────────────────────── */
@@ -1293,6 +1344,19 @@ em {
   color: var(--paper);
 }
 
+.monitor-metrics,
+.monitor-chart,
+.tabs-note {
+  transition: opacity 240ms var(--ease), transform 240ms var(--ease);
+}
+
+.monitor-metrics.is-swapping,
+.monitor-chart.is-swapping,
+.tabs-note.is-swapping {
+  opacity: 0.28;
+  transform: translateY(4px);
+}
+
 .tabs-note {
   margin-top: 1rem;
   font-family: var(--mono);
@@ -1303,8 +1367,15 @@ em {
 }
 
 .monitor {
+  /* obsidian device chrome against the navy section: one more step down */
+  --ink: #f5efea;
+  --ink-2: rgba(245, 239, 234, 0.8);
+  --ink-3: #91cfd5;
+  --line: rgba(145, 207, 213, 0.18);
+  --line-soft: rgba(145, 207, 213, 0.1);
+  --line-strong: rgba(145, 207, 213, 0.32);
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper) 92%, var(--surface));
+  background: var(--obsidian);
 }
 
 .monitor-bar {
@@ -1331,7 +1402,7 @@ em {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--signal);
   animation: pulse 2.6s var(--ease) infinite;
 }
 
@@ -1339,11 +1410,11 @@ em {
   0%,
   100% {
     opacity: 1;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 40%, transparent);
   }
   50% {
-    opacity: 0.65;
-    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 0%, transparent);
+    opacity: 0.7;
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 0%, transparent);
   }
 }
 
@@ -1532,26 +1603,26 @@ em {
 .post-thumb--rings {
   background-image: repeating-radial-gradient(
     circle at 58% 42%,
-    color-mix(in srgb, var(--accent) 26%, transparent) 0 1px,
+    color-mix(in srgb, var(--accent) 30%, transparent) 0 1px,
     transparent 1px 11px
   ),
-  radial-gradient(70% 70% at 50% 50%, rgba(12, 110, 99, 0.18), transparent 72%),
-  linear-gradient(160deg, #eef1ee 0%, #f6f2ec 100%);
+  radial-gradient(70% 70% at 50% 50%, rgba(145, 207, 213, 0.5), transparent 72%),
+  linear-gradient(160deg, #eef2f6 0%, #f6f2ec 100%);
 }
 
 .post-thumb--lines {
   background-image: repeating-linear-gradient(
       90deg,
-      rgba(11, 15, 16, 0.07) 0 1px,
+      rgba(17, 48, 86, 0.08) 0 1px,
       transparent 1px 9px
     ),
-    linear-gradient(90deg, #d9dcf0 0 46%, #e8e4f2 46% 62%, #f2eee9 62% 100%);
+    linear-gradient(90deg, #113056 0 46%, #91cfd5 46% 62%, #f5efea 62% 100%);
 }
 
 .post-thumb--dots {
-  background-image: radial-gradient(circle, rgba(11, 15, 16, 0.16) 1px, transparent 1.2px);
+  background-image: radial-gradient(circle, rgba(17, 48, 86, 0.3) 1px, transparent 1.2px);
   background-size: 11px 11px;
-  background-color: #f5f0e8;
+  background-color: #f5efea;
 }
 
 .post-kicker {
@@ -1683,7 +1754,7 @@ em {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(2rem, 5vw, 4.5rem);
   padding: clamp(1.75rem, 4vw, 3.5rem);
-  background: linear-gradient(180deg, #fbfaf6 0%, #f7f5f0 100%);
+  background: linear-gradient(180deg, #fbf7f3 0%, #edf2f4 100%);
   border: 1px solid var(--line-soft);
 }
 
@@ -1749,7 +1820,7 @@ em {
 }
 
 .field.has-error {
-  border-bottom-color: #a4382c;
+  border-bottom-color: #c2185b;
 }
 
 .field label {
@@ -1787,7 +1858,7 @@ em {
   margin-top: 0.4rem;
   font-size: 0.75rem;
   line-height: 1.4;
-  color: #a4382c;
+  color: #c2185b;
 }
 
 .form-actions {
@@ -1841,7 +1912,7 @@ em {
 }
 
 .form-status.is-bad {
-  color: #a4382c;
+  color: #c2185b;
 }
 
 .access-form.is-done .field,
@@ -1968,7 +2039,12 @@ em {
   transform: translateY(-2px);
 }
 
+.wordmark-clip {
+  overflow: hidden;
+}
+
 .footer-wordmark {
+  display: block;
   font-family: var(--serif);
   font-size: clamp(3.75rem, 16.2vw, 15.5rem);
   line-height: 1;
@@ -2010,6 +2086,89 @@ em {
   transform: none;
 }
 
+/* ── Display lines: a soft upward wipe per line ────────────────────────
+   clip-path instead of overflow:hidden, with a negative resting inset, so
+   ascenders and descenders (the "p" in approximation) are never shaved. */
+.line {
+  display: block;
+}
+
+html.js [data-lines] > .line {
+  clip-path: inset(100% -0.25em -0.45em -0.25em);
+  transform: translateY(0.07em);
+  transition: clip-path 980ms var(--ease-out), transform 980ms var(--ease-out);
+  transition-delay: var(--ld, 0ms);
+}
+
+html.js [data-lines].is-in > .line {
+  clip-path: inset(-0.45em -0.25em -0.45em -0.25em);
+  transform: none;
+}
+
+/* ── Drawn hairlines ─────────────────────────────────────────────────── */
+html.js .section-head::after {
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-out) 120ms;
+}
+
+html.js .section-head.is-in::after {
+  transform: scaleX(1);
+}
+
+html.js .doctrine-col::after {
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-out);
+  transition-delay: calc(var(--rd, 0ms) + 200ms);
+}
+
+html.js .doctrine-col.is-in::after {
+  transform: scaleX(1);
+}
+
+/* ── Hero plate settles in, then drifts with the scroll ─────────────── */
+html.js .hero-plate .plate-canvas {
+  opacity: 0;
+  transform: scale(0.965);
+  transform-origin: 50% 50%;
+  transition: opacity 1500ms var(--ease-out) 140ms, transform 1800ms var(--ease-out) 140ms;
+}
+
+html.js .hero-plate.is-in .plate-canvas {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Footer wordmark rises out of its own baseline ──────────────────── */
+html.js .wordmark-clip .footer-wordmark {
+  transform: translateY(102%);
+  transition: transform var(--d-xslow) var(--ease-out) 60ms;
+}
+
+html.js .wordmark-clip.is-in .footer-wordmark {
+  transform: none;
+}
+
+/* ── Language switch cross-fades the page ───────────────────────────── */
+::view-transition-old(root) {
+  animation: vt-out 260ms var(--ease) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 340ms var(--ease) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -2027,6 +2186,26 @@ em {
   .statement .w {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  html.js [data-lines] > .line {
+    clip-path: none !important;
+    transform: none !important;
+  }
+
+  html.js .wordmark-clip .footer-wordmark,
+  html.js .hero-plate .plate-canvas {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html.js .section-head::after,
+  html.js .doctrine-col::after {
+    transform: scaleX(1) !important;
+  }
+
+  .card::before {
+    transition: none;
   }
 
   .marquee-track {
@@ -2087,7 +2266,7 @@ em {
   }
 
   .hero::after {
-    background: radial-gradient(70% 40% at 50% 72%, rgba(12, 110, 99, 0.05), transparent 72%);
+    background: radial-gradient(70% 40% at 50% 72%, rgba(18, 46, 138, 0.06), transparent 72%);
   }
 
   .doctrine-grid {
@@ -2311,7 +2490,7 @@ em {
 /* ── 23. Chinese typographic refinements ───────────────────────────────── */
 
 html[data-lang="zh"] {
-  --serif: "Instrument Serif", "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", serif;
+  --serif: "Instrument Serif", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
   --sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --mono: "IBM Plex Mono", "SFMono-Regular", "PingFang SC", "Microsoft YaHei", ui-monospace, monospace;
 }
@@ -2418,6 +2597,12 @@ html[data-lang="zh"] .btn {
   .js .reveal,
   .statement .w {
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html.js [data-lines] > .line,
+  html.js .wordmark-clip .footer-wordmark {
+    clip-path: none !important;
     transform: none !important;
   }
 

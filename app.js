@@ -469,6 +469,7 @@
     });
 
     /* Copy that is rebuilt by script must be re-derived after a swap. */
+    initLines();
     splitStatement();
     renderTelemetry(currentTab);
     syncMenuLabel();
@@ -601,10 +602,31 @@
       )
     : null;
 
-  each(".reveal", function (el) {
+  each(".reveal, .reveal-lines", function (el) {
     if (revealIO) revealIO.observe(el);
     else el.classList.add("is-in");
   });
+
+  /* Split multi-line display headings into lines so each line can wipe in
+     on its own. Runs after every language swap because the dictionary
+     replaces the whole innerHTML (with <br> separators). */
+  function initLines() {
+    each("[data-lines]", function (el) {
+      var html = el.innerHTML;
+      var parts = html.split(/<br\s*\/?>/i);
+      var base = parseInt(el.getAttribute("data-line-delay") || "0", 10) || 0;
+      var out = "";
+      for (var i = 0; i < parts.length; i++) {
+        out +=
+          '<span class="line" style="--ld:' +
+          (base + i * 90) +
+          'ms">' +
+          parts[i].trim() +
+          "</span>";
+      }
+      el.innerHTML = out;
+    });
+  }
 
   /* Split the doctrine statement into words once, and again after a
      language swap (the dictionary replaces the whole node). */
@@ -699,8 +721,8 @@
     if (!canvas) return;
 
     var ctx = canvas.getContext("2d");
-    var ink = "11,15,16";
-    var accent = "12,110,99";
+    var ink = "17,48,86";      /* 捣蓝色 */
+    var accent = "18,46,138";  /* 深海蓝 */
     var dashes = [];
     var N = 520;
     var size = 0;
@@ -713,7 +735,7 @@
       var jitter = 1 + 0.05 * Math.sin(i * 1.71) + 0.03 * Math.sin(i * 4.13);
       var r = (0.06 + 0.36 * Math.sqrt(u)) * jitter;
       var a = i * 2.39996 + u * 5.2;
-      var alpha = 0.09 + 0.32 * (0.5 + 0.5 * Math.sin(i * 7.13));
+      var alpha = 0.16 + 0.38 * (0.5 + 0.5 * Math.sin(i * 7.13));
       /* stroke drawn as a short tangential tick, not an arc */
       var tilt = 0.28 * Math.sin(i * 3.37);
       var length = 2.2 + 5.0 * (0.5 + 0.5 * Math.sin(i * 2.11 + 1));
@@ -739,14 +761,14 @@
       /* outer ring */
       ctx.beginPath();
       ctx.arc(c, c, R * 0.905, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(" + ink + ",0.16)";
+      ctx.strokeStyle = "rgba(" + ink + ",0.26)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       /* inner guide ring */
       ctx.beginPath();
       ctx.arc(c, c, R * 0.30, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(" + ink + ",0.06)";
+      ctx.strokeStyle = "rgba(" + ink + ",0.1)";
       ctx.stroke();
 
       /* dash field */
@@ -802,7 +824,7 @@
         ctx.beginPath();
         ctx.moveTo(x0, y0);
         ctx.lineTo(x1, y1);
-        ctx.strokeStyle = "rgba(" + ink + ",0.2)";
+        ctx.strokeStyle = "rgba(" + ink + ",0.3)";
         ctx.stroke();
       }
     }
@@ -906,7 +928,7 @@
       ctx.clearRect(0, 0, w, h);
 
       /* baseline guides */
-      ctx.strokeStyle = "rgba(244,243,239,0.07)";
+      ctx.strokeStyle = "rgba(245,239,234,0.06)";
       ctx.lineWidth = 1;
       for (var g = 1; g <= 3; g++) {
         var gy = (h / 4) * g;
@@ -925,7 +947,7 @@
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = pass === 0 ? "rgba(92,188,174,0.18)" : "rgba(140,222,209,0.95)";
+        ctx.strokeStyle = pass === 0 ? "rgba(145,207,213,0.16)" : "rgba(183,229,233,0.95)";
         ctx.lineWidth = pass === 0 ? 3 : 1.15;
         ctx.lineJoin = "round";
         ctx.stroke();
@@ -973,6 +995,26 @@
     if (activeBtn && panel) panel.setAttribute("aria-labelledby", activeBtn.id);
   }
 
+  var swapEls = [metricsRoot, doc.querySelector(".monitor-chart"), sourceEl];
+
+  function swapTelemetry(tab) {
+    if (reduced.matches) {
+      renderTelemetry(tab);
+      return;
+    }
+    /* fade the readouts down, swap the numbers while they are dim,
+       then let them settle back — 160ms out, 240ms in */
+    swapEls.forEach(function (el) {
+      if (el) el.classList.add("is-swapping");
+    });
+    window.setTimeout(function () {
+      renderTelemetry(tab);
+      swapEls.forEach(function (el) {
+        if (el) el.classList.remove("is-swapping");
+      });
+    }, 160);
+  }
+
   function selectTab(tab, focus) {
     currentTab = tab;
     for (var i = 0; i < tabButtons.length; i++) {
@@ -982,7 +1024,7 @@
       b.tabIndex = on ? 0 : -1;
       if (on && focus) b.focus();
     }
-    renderTelemetry(tab);
+    swapTelemetry(tab);
   }
 
   if (tabsRoot) {
@@ -1080,7 +1122,112 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     9. Section-aware navigation
+     9. Scroll-linked motion
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* The plate drifts at a fraction of the scroll speed while the hero is
+     on screen; the hero copy eases back a little so the transition out of
+     the first screen is gradual rather than a hard cut. Transform and
+     opacity only — no layout work per frame. */
+  function initParallax() {
+    var plate = doc.querySelector(".hero-plate .plate");
+    var grid = doc.querySelector(".hero-grid");
+    if (!plate || !grid) return;
+
+    var vh = window.innerHeight;
+    var ticking = false;
+    var engaged = true;
+
+    function update() {
+      ticking = false;
+      if (reduced.matches) return;
+
+      var y = window.pageYOffset || doc.documentElement.scrollTop;
+
+      if (y > vh * 1.2) {
+        if (engaged) {
+          plate.style.transform = "";
+          grid.style.opacity = "";
+          engaged = false;
+        }
+        return;
+      }
+
+      engaged = true;
+      plate.style.transform = "translate3d(0," + (y * 0.08).toFixed(2) + "px,0)";
+      grid.style.opacity = Math.max(0, 1 - (y / (vh * 1.05)) * 0.55).toFixed(3);
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "resize",
+      function () {
+        vh = window.innerHeight;
+      },
+      { passive: true }
+    );
+
+    update();
+  }
+
+  /* Marks the step closest to a reading line at 45% of the viewport.
+     A scroll handler rather than an IntersectionObserver: with four tall
+     elements and a narrow band, IO reports several targets at once and the
+     marker jumps. Comparing distances is deterministic and cheap. */
+  function initSteps() {
+    var steps = Array.prototype.slice.call(doc.querySelectorAll(".step"));
+    if (!steps.length) return;
+
+    var ticking = false;
+
+    function update() {
+      ticking = false;
+      var line = window.innerHeight * 0.45;
+      var best = -1;
+      var bestDist = Infinity;
+
+      for (var i = 0; i < steps.length; i++) {
+        var r = steps[i].getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) continue;
+        var mid = r.top + Math.min(r.height, window.innerHeight * 0.5) / 2;
+        var d = Math.abs(mid - line);
+        if (d < bestDist) {
+          bestDist = d;
+          best = i;
+        }
+      }
+
+      for (var j = 0; j < steps.length; j++) {
+        steps[j].classList.toggle("is-active", j === best);
+      }
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+
+    update();
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     10. Section-aware navigation
      ══════════════════════════════════════════════════════════════════════ */
 
   function initNavHighlight() {
@@ -1120,9 +1267,23 @@
      10. Boot
      ══════════════════════════════════════════════════════════════════════ */
 
+  function switchLang(next) {
+    var run = function () {
+      applyLang(next, true);
+    };
+    /* Cross-fade the whole page so a language swap does not snap. */
+    if (doc.startViewTransition && !reduced.matches) {
+      try {
+        doc.startViewTransition(run);
+        return;
+      } catch (e) {}
+    }
+    run();
+  }
+
   each("[data-lang-btn]", function (btn) {
     btn.addEventListener("click", function () {
-      applyLang(btn.getAttribute("data-lang-btn"), true);
+      switchLang(btn.getAttribute("data-lang-btn"));
     });
   });
 
@@ -1132,6 +1293,8 @@
   initEcg();
   initForm();
   initNavHighlight();
+  initParallax();
+  initSteps();
 
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });

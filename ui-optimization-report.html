@@ -358,18 +358,20 @@
       <p><strong>预期：</strong>表单从「黑盒」变为可感知的过程；首屏建立视觉重心的顺序更自然。</p>
 
       <!-- 4 -->
-      <h2><span class="n">04</span>设计规范（沿用原品牌色）</h2>
+      <h2><span class="n">04</span>设计规范（三组参考色）</h2>
+
+      <p>第二轮把三组参考色落成一套有明确分工的色板：柔奶白作纸底，捣蓝色作正文与深色区，深海蓝作结构性强调，清水蓝作浅色块，甜酷粉只留给信号点。</p>
 
       <div class="swatches">
-        <div class="sw"><i style="background:#0b0f10"></i><span><b>--ink</b>#0B0F10</span></div>
-        <div class="sw"><i style="background:#33393b"></i><span><b>--ink-2</b>#33393B</span></div>
-        <div class="sw"><i style="background:#5b6366"></i><span><b>--ink-3</b>#5B6366 · 5.53:1</span></div>
-        <div class="sw"><i style="background:#f4f3ef"></i><span><b>--paper</b>#F4F3EF</span></div>
-        <div class="sw"><i style="background:#faf9f5"></i><span><b>--surface</b>#FAF9F5</span></div>
-        <div class="sw"><i style="background:#0c6e63"></i><span><b>--accent</b>#0C6E63</span></div>
+        <div class="sw"><i style="background:#f5efea"></i><span><b>--paper</b>柔奶白 #F5EFEA</span></div>
+        <div class="sw"><i style="background:#113056"></i><span><b>--ink</b>捣蓝色 #113056</span></div>
+        <div class="sw"><i style="background:#122e8a"></i><span><b>--accent</b>深海蓝 #122E8A</span></div>
+        <div class="sw"><i style="background:#91cfd5"></i><span><b>--tint</b>清水蓝 #91CFD5</span></div>
+        <div class="sw"><i style="background:#e93f80"></i><span><b>--signal</b>甜酷粉 #E93F80</span></div>
+        <div class="sw"><i style="background:#1e1e22"></i><span><b>--obsidian</b>黑曜石 #1E1E22</span></div>
       </div>
       <p style="font-size:13px;color:var(--ink-3);margin-top:-4px">
-        原站的次级文字 <code>#6D7578</code> 仅 4.24:1，本次压深到 <code>#5B6366</code>（5.53:1）；强调绿与纸底色保持不变，深色区强调色提亮为 <code>#5CBCAE</code> 以维持对比。
+        正文压在 <code>#113056</code>（11.8:1），次级文字 <code>#57667C</code>（5.12:1）。甜酷粉在纸底上只有 3.36:1，因此只用于圆点、指示这类图形，不承载文字；表单报错另取压深版 <code>#C2185B</code>（5.13:1）。清水蓝只做底色与波形，不作正文。
       </p>
 
       <table>
@@ -385,11 +387,36 @@
         </tbody>
       </table>
 
-      <h3>字体策略：只加载拉丁</h3>
+      <h3>字体：拉丁三族 + 中文标题一款</h3>
       <p>
-        原站从中英文字体服务同时拉取 Instrument Serif、Inter 4 字重、IBM Plex Mono 2 字重、Noto Serif SC 3 字重、Noto Sans SC 3 字重。新版只保留三款拉丁字族，中文改用系统字体栈
-        （<code>PingFang SC / Hiragino Sans GB / Microsoft YaHei / Songti SC</code>）——宋体在标题位与 Instrument Serif 的气质本就接近，而中文 webfont 的体积代价（常见为 1–3 MB／字重）对单页站点并不划算。
+        拉丁保留 Instrument Serif（标题）、Inter（正文）、IBM Plex Mono（微标签）。中文在第二轮换掉了系统回退：Windows 上原先落到宋体，标题笔画发旧；现改为
+        <strong>Noto Serif SC</strong>（400/500 两字重），只在衬线场景生效，正文中文仍走系统黑体（苹方 / 微软雅黑），避免为正文付中文字库的代价。
       </p>
+      <p>
+        Noto Serif SC 由 Google Fonts 按 unicode-range 切片，浏览器只下载页面实际用到的那几片，而不是整包 1–3 MB。这是「标题用真衬线、正文不背字库」的折中。
+      </p>
+
+      <h3>第二轮新增的动效</h3>
+      <table>
+        <thead><tr><th>位置</th><th>动效</th><th>时长 / 缓动</th></tr></thead>
+        <tbody>
+          <tr><td>首屏</td><td>标题逐行从下向上擦入（clip-path）</td><td>980ms · ease-out · 每行 +90ms</td></tr>
+          <tr><td>首屏</td><td>说明 / 按钮 / 指标 / 图版分级入场</td><td>720ms · 延迟 180–610ms</td></tr>
+          <tr><td>首屏</td><td>图版随滚动视差，文案同步轻微退场</td><td>0.08 系数 · rAF 节流</td></tr>
+          <tr><td>首屏</td><td>事件视界图版从 0.965 缩放到 1</td><td>1800ms · ease-out</td></tr>
+          <tr><td>区块</td><td>顶部细线从左向右绘制</td><td>900ms · ease-out</td></tr>
+          <tr><td>区块</td><td>五处大标题逐行擦入</td><td>980ms · 行间 90ms</td></tr>
+          <tr><td>信条</td><td>三栏顶线依次绘制 + 正文逐句显现</td><td>900ms / 24ms 步进</td></tr>
+          <tr><td>仪器</td><td>卡片悬停顶部强调线展开、图标变色</td><td>560ms · ease-out</td></tr>
+          <tr><td>流程</td><td>当前步骤圆点填充、正文加深</td><td>420ms · 随滚动切换</td></tr>
+          <tr><td>遥测</td><td>切换标签时读数淡出换值再淡入</td><td>160ms 出 / 240ms 入</td></tr>
+          <tr><td>遥测</td><td>心电波形持续缓行、粉色脉冲点呼吸</td><td>76 px/s · 2.6s</td></tr>
+          <tr><td>结果</td><td>数字跳动 + 单位随值稳定</td><td>1200ms · ease-out</td></tr>
+          <tr><td>期刊</td><td>缩略图悬停轻微放大、阅读字样滑入</td><td>720ms / 380ms</td></tr>
+          <tr><td>页脚</td><td>巨型字标从基线下方升起</td><td>1200ms · ease-out</td></tr>
+          <tr><td>全局</td><td>语言切换整页交叉淡化（View Transition）</td><td>260ms 出 / 340ms 入</td></tr>
+        </tbody>
+      </table>
 
       <!-- 5 -->
       <h2><span class="n">05</span>验证结果</h2>
