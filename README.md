@@ -53,6 +53,7 @@ python -m http.server 8321
 
 全部基于 transform / opacity / clip-path，只触发合成层。
 
+- **事件视界图版 = 一台扫描仪**：刻度环、点阵场、数据波、扫描头、声呐环、卫星点、呼吸核心七层叠加
 - 标题逐行擦入（clip-path，980ms，行间 90ms）
 - 区块细线从左绘制（900ms）
 - 首屏图版视差 + 文案退场（rAF 节流，系数 0.08）
@@ -60,6 +61,8 @@ python -m http.server 8321
 - 遥测标签切换淡出换值再淡入
 - 页脚字标从基线下方升起（1200ms）
 - 语言切换整页交叉淡化（View Transitions API，不支持时降级为直接切换）
+- 强调字上有一层缓慢流动的高光（21s 往返），只在 `background-clip: text` 可用时启用
+- 区块细线绘制完成后掠过一道粉色光点；按钮悬停有斜向高光
 - `prefers-reduced-motion` 下全部瞬时完成、内容保持可见
 
 ## 交互逻辑清单

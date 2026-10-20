@@ -507,6 +507,14 @@
       }
     }
     header.setAttribute("data-on-dark", isDark ? "true" : "false");
+
+    /* On the first screen no section is current yet — clear the marker so
+       the last-visited section does not stay underlined at the top. */
+    if (window.scrollY < window.innerHeight * 0.55) {
+      each("[data-nav]", function (a) {
+        a.removeAttribute("aria-current");
+      });
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -721,25 +729,57 @@
     if (!canvas) return;
 
     var ctx = canvas.getContext("2d");
-    var ink = "17,48,86";      /* 捣蓝色 */
-    var accent = "18,46,138";  /* 深海蓝 */
-    var dashes = [];
-    var N = 520;
-    var size = 0;
-    var started = 0;
-    var visible = true;
+    var TAU = Math.PI * 2;
+    var INK = [17, 48, 86];   /* 捣蓝色 */
+    var ACC = [18, 46, 138];  /* 深海蓝 */
+    var SIG = [233, 63, 128]; /* 甜酷粉 */
 
-    for (var i = 0; i < N; i++) {
-      var u = i / N;
-      /* jitter keeps the field from reading as concentric rings */
-      var jitter = 1 + 0.05 * Math.sin(i * 1.71) + 0.03 * Math.sin(i * 4.13);
-      var r = (0.06 + 0.36 * Math.sqrt(u)) * jitter;
-      var a = i * 2.39996 + u * 5.2;
-      var alpha = 0.16 + 0.38 * (0.5 + 0.5 * Math.sin(i * 7.13));
-      /* stroke drawn as a short tangential tick, not an arc */
-      var tilt = 0.28 * Math.sin(i * 3.37);
-      var length = 2.2 + 5.0 * (0.5 + 0.5 * Math.sin(i * 2.11 + 1));
-      dashes.push({ r: r, a: a, tilt: tilt, len: length, alpha: alpha });
+    var size = 0;
+    var dashes = [];
+    var ticks = [];
+    var visible = true;
+    var start = 0;
+
+    /* deterministic pseudo-random so the field is identical on every load */
+    var seed = 0;
+    function rnd() {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      return seed / 4294967296;
+    }
+
+    function angDist(a, b) {
+      var d = Math.abs(a - b) % TAU;
+      return d > Math.PI ? TAU - d : d;
+    }
+
+    /* ink -> accent, so a dash brightens in hue as the scanner reaches it */
+    function mix(t) {
+      var r = Math.round(INK[0] + (ACC[0] - INK[0]) * t);
+      var g = Math.round(INK[1] + (ACC[1] - INK[1]) * t);
+      var b = Math.round(INK[2] + (ACC[2] - INK[2]) * t);
+      return r + "," + g + "," + b;
+    }
+
+    function build() {
+      seed = 20261020;
+      dashes = [];
+      ticks = [];
+      var i;
+      /* density follows the rendered size so phones do not pay for
+         desktop stroke counts */
+      var n = Math.max(150, Math.min(460, Math.round(size * 0.92)));
+      for (i = 0; i < n; i++) {
+        dashes.push({
+          u: 0.10 + 0.78 * Math.sqrt(rnd()),
+          a: rnd() * TAU,
+          len: 1.8 + rnd() * 5.2,
+          tilt: (rnd() - 0.5) * 1.05,
+          base: 0.15 + rnd() * 0.2,
+          ph: rnd() * TAU
+        });
+      }
+      var tn = size < 360 ? 48 : 72;
+      for (i = 0; i < tn; i++) ticks.push((i / tn) * TAU);
     }
 
     function resize() {
@@ -749,89 +789,164 @@
       canvas.width = Math.round(size * dpr);
       canvas.height = Math.round(size * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw(0);
+      build();
+      draw(reduced.matches ? 0 : (performance.now() - start) / 1000);
     }
 
     function draw(t) {
       if (!size) return;
       var c = size / 2;
       var R = size * 0.5;
+      var sweep = t * 0.5; /* one revolution ≈ 12.5s */
+
       ctx.clearRect(0, 0, size, size);
 
-      /* outer ring */
+      /* 1 · cool wash so the field sits on its own light disc */
+      var disc = ctx.createRadialGradient(c, c, R * 0.08, c, c, R * 0.92);
+      disc.addColorStop(0, "rgba(145,207,213,0.15)");
+      disc.addColorStop(0.55, "rgba(145,207,213,0.06)");
+      disc.addColorStop(1, "rgba(145,207,213,0)");
+      ctx.fillStyle = disc;
       ctx.beginPath();
-      ctx.arc(c, c, R * 0.905, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(" + ink + ",0.26)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      ctx.arc(c, c, R * 0.92, 0, TAU);
+      ctx.fill();
 
-      /* inner guide ring */
-      ctx.beginPath();
-      ctx.arc(c, c, R * 0.30, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(" + ink + ",0.1)";
-      ctx.stroke();
-
-      /* dash field */
-      var rot = t * 0.02;
-      for (var i = 0; i < dashes.length; i++) {
-        var d = dashes[i];
-        var ang = d.a + rot;
-        var rad = d.r * R * 1.95;
-        var x = c + Math.cos(ang) * rad;
-        var y = c + Math.sin(ang) * rad;
-        var dir = ang + Math.PI / 2 + d.tilt;
-        var hx = Math.cos(dir) * d.len * 0.5;
-        var hy = Math.sin(dir) * d.len * 0.5;
+      /* 2 · sonar rings travelling out from the centre */
+      for (var k = 0; k < 2; k++) {
+        var p = (t * 0.19 + k * 0.5) % 1;
         ctx.beginPath();
-        ctx.moveTo(x - hx, y - hy);
-        ctx.lineTo(x + hx, y + hy);
-        ctx.strokeStyle = "rgba(" + ink + "," + d.alpha.toFixed(3) + ")";
+        ctx.arc(c, c, (0.12 + p * 0.78) * R, 0, TAU);
+        ctx.strokeStyle = "rgba(18,46,138," + ((1 - p) * (1 - p) * 0.28).toFixed(3) + ")";
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      /* accent marker: arc + dot, upper right */
-      var mA0 = -0.72;
-      var mA1 = -0.42;
+      /* 3 · outer scale + inner hairline */
       ctx.beginPath();
-      ctx.arc(c, c, R * 0.905, mA0, mA1);
-      ctx.strokeStyle = "rgba(" + accent + ",0.85)";
-      ctx.lineWidth = 1.2;
+      ctx.arc(c, c, R * 0.905, 0, TAU);
+      ctx.strokeStyle = "rgba(17,48,86,0.28)";
+      ctx.lineWidth = 1;
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(c + Math.cos(mA1) * R * 0.905, c + Math.sin(mA1) * R * 0.905, 2.4, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(" + accent + ",0.9)";
-      ctx.fill();
-
-      /* centre */
-      ctx.beginPath();
-      ctx.arc(c, c, 2, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(" + ink + ",0.75)";
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(c, c, 5.5, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(" + ink + ",0.14)";
+      ctx.arc(c, c, R * 0.335, 0, TAU);
+      ctx.strokeStyle = "rgba(17,48,86,0.08)";
       ctx.stroke();
 
-      /* cardinal ticks */
-      for (var k = 0; k < 4; k++) {
-        var ang = (Math.PI / 2) * k + Math.PI / 4;
-        var x0 = c + Math.cos(ang) * R * 0.86;
-        var y0 = c + Math.sin(ang) * R * 0.86;
-        var x1 = c + Math.cos(ang) * R * 0.905;
-        var y1 = c + Math.sin(ang) * R * 0.905;
+      /* inner ring carries four focus brackets, like a reticle */
+      for (var b = 0; b < 4; b++) {
+        var ba = (Math.PI / 2) * b + Math.PI / 4;
+        var br = R * 0.335;
         ctx.beginPath();
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x1, y1);
-        ctx.strokeStyle = "rgba(" + ink + ",0.3)";
+        ctx.arc(c, c, br, ba - 0.045, ba + 0.045);
+        ctx.strokeStyle = "rgba(17,48,86,0.32)";
+        ctx.lineWidth = 1.4;
         ctx.stroke();
       }
+
+      /* 4 · tick ring, lit as the scanner passes */
+      for (var i = 0; i < ticks.length; i++) {
+        var ang = ticks[i];
+        var long = i % 6 === 0;
+        var lit = Math.exp(-Math.pow(angDist(ang, sweep) / 0.5, 2));
+        var r0 = R * 0.905;
+        var r1 = R * (long ? 0.866 : 0.883);
+        ctx.beginPath();
+        ctx.moveTo(c + Math.cos(ang) * r1, c + Math.sin(ang) * r1);
+        ctx.lineTo(c + Math.cos(ang) * r0, c + Math.sin(ang) * r0);
+        ctx.strokeStyle = "rgba(" + (lit > 0.35 ? "18,46,138" : "17,48,86") + "," + (0.12 + lit * 0.5).toFixed(3) + ")";
+        ctx.stroke();
+      }
+
+      /* 5 · the dash field: each stroke brightens as the beam reaches it,
+         and a radial wave lifts a ring of strokes outward every 3.8s */
+      var wave = (t * 0.26) % 1;
+      var waveR = 0.10 + wave * 0.78;
+      for (i = 0; i < dashes.length; i++) {
+        var d = dashes[i];
+        var glow = Math.exp(-Math.pow(angDist(d.a, sweep) / 0.62, 2));
+        var dw = (d.u - waveR) / 0.075;
+        var pulse = Math.exp(-dw * dw);
+        var shimmer = 0.85 + 0.15 * Math.sin(d.u * 22 - t * 1.3 + d.ph);
+        /* a readable floor everywhere, so the field still reads as a field,
+           plus a lift inside the beam and a stronger one on the wave */
+        var al = d.base * (1.02 + 1.3 * glow + 1.7 * pulse) * shimmer;
+        if (al < 0.008) continue;
+
+        var rad = d.u * R;
+        var x = c + Math.cos(d.a) * rad;
+        var y = c + Math.sin(d.a) * rad;
+        var dir = d.a + Math.PI / 2 + d.tilt;
+        var hx = Math.cos(dir) * d.len * 0.5;
+        var hy = Math.sin(dir) * d.len * 0.5;
+
+        ctx.beginPath();
+        ctx.moveTo(x - hx, y - hy);
+        ctx.lineTo(x + hx, y + hy);
+        ctx.strokeStyle =
+          "rgba(" +
+          mix(Math.min(1, glow * 1.1 + pulse * 0.55)) +
+          "," +
+          Math.min(al, 0.82).toFixed(3) +
+          ")";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      /* 6 · the scanner itself: a tapering arc with a magenta head */
+      var tail = 0.92;
+      var seg = 16;
+      for (var si = 0; si < seg; si++) {
+        var f = (si + 1) / seg;
+        var a0 = sweep - tail * (1 - f);
+        var a1 = a0 + tail / seg + 0.006;
+        ctx.beginPath();
+        ctx.arc(c, c, R * 0.905, a0, a1);
+        ctx.strokeStyle = "rgba(18,46,138," + (0.95 * Math.pow(f, 1.9)).toFixed(3) + ")";
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+      }
+
+      var hx2 = c + Math.cos(sweep) * R * 0.905;
+      var hy2 = c + Math.sin(sweep) * R * 0.905;
+      var halo = ctx.createRadialGradient(hx2, hy2, 0, hx2, hy2, R * 0.075);
+      halo.addColorStop(0, "rgba(233,63,128,0.42)");
+      halo.addColorStop(1, "rgba(233,63,128,0)");
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(hx2, hy2, R * 0.075, 0, TAU);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(hx2, hy2, 2.4, 0, TAU);
+      ctx.fillStyle = "rgba(233,63,128,0.95)";
+      ctx.fill();
+
+      /* 7 · a single slow satellite on an inner orbit */
+      var oa = -t * 0.31 + 1.1;
+      var ox = c + Math.cos(oa) * R * 0.46;
+      var oy = c + Math.sin(oa) * R * 0.46;
+      ctx.beginPath();
+      ctx.arc(ox, oy, 1.7, 0, TAU);
+      ctx.fillStyle = "rgba(18,46,138,0.7)";
+      ctx.fill();
+
+      /* 8 · centre: fixed dot with a breathing ring */
+      var breath = 0.5 + 0.5 * Math.sin(t * 1.7);
+      ctx.beginPath();
+      ctx.arc(c, c, 2.2, 0, TAU);
+      ctx.fillStyle = "rgba(17,48,86,0.82)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(c, c, 5 + 2.4 * breath, 0, TAU);
+      ctx.strokeStyle = "rgba(18,46,138," + (0.24 - 0.12 * breath).toFixed(3) + ")";
+      ctx.lineWidth = 1;
+      ctx.stroke();
     }
 
     function loop(now) {
-      if (!started) started = now;
-      if (visible && !reduced.matches) draw((now - started) / 1000);
+      if (!start) start = now;
+      if (visible && !reduced.matches) draw((now - start) / 1000);
       requestAnimationFrame(loop);
     }
 
@@ -938,10 +1053,12 @@
         ctx.stroke();
       }
 
-      /* two passes: soft halo + crisp trace */
+      /* two passes: soft halo + crisp trace. The last 26px are held back
+         for the live cursor at the head of the trace. */
+      var headGap = 26;
       for (var pass = 0; pass < 2; pass++) {
         ctx.beginPath();
-        for (var x = 0; x <= w; x += 1) {
+        for (var x = 0; x <= w - headGap; x += 1) {
           var ts = t - (w - x) / speed;
           var y = mid - fn(ts) * h * scale * 0.5;
           if (x === 0) ctx.moveTo(x, y);
@@ -952,6 +1069,30 @@
         ctx.lineJoin = "round";
         ctx.stroke();
       }
+
+      /* live cursor: scan bar + magenta pulse at the trace head */
+      var headX = w - headGap;
+      var headY = mid - fn(t - headGap / speed) * h * scale * 0.5;
+
+      ctx.beginPath();
+      ctx.moveTo(headX, 0);
+      ctx.lineTo(headX, h);
+      ctx.strokeStyle = "rgba(145,207,213,0.22)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      var glow = ctx.createRadialGradient(headX, headY, 0, headX, headY, 16);
+      glow.addColorStop(0, "rgba(233,63,128,0.5)");
+      glow.addColorStop(1, "rgba(233,63,128,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(headX, headY, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(headX, headY, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,242,247,0.96)";
+      ctx.fill();
     }
 
     if ("IntersectionObserver" in window) {

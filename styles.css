@@ -290,6 +290,61 @@ em {
   letter-spacing: -0.01em;
 }
 
+/* The emphasised word carries a slow gradient that drifts across it:
+   navy → deep blue → magenta and back. Guarded by @supports because the
+   text colour is set to transparent; without clipping it would vanish. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .display em,
+  .h2 em,
+  .quote blockquote em {
+    /* a slow specular sheen inside the navy family — no hue shift, so the
+       emphasis stays expensive rather than rainbow */
+    background-image: linear-gradient(
+      100deg,
+      #113056 0%,
+      #113056 30%,
+      #122e8a 44%,
+      #3a5ac8 50%,
+      #122e8a 56%,
+      #113056 70%,
+      #113056 100%
+    );
+    background-size: 260% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-sheen 21s var(--ease) infinite;
+  }
+
+  .section--dark .display em,
+  .section--dark .h2 em,
+  .section--dark .quote blockquote em {
+    background-image: linear-gradient(
+      100deg,
+      #f5efea 0%,
+      #f5efea 30%,
+      #91cfd5 45%,
+      #d8f2f4 50%,
+      #91cfd5 55%,
+      #f5efea 70%,
+      #f5efea 100%
+    );
+  }
+
+  @keyframes text-sheen {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
 .h2 {
   font-family: var(--serif);
   font-size: var(--t-h2);
@@ -377,6 +432,7 @@ em {
 
 .btn {
   position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -393,6 +449,31 @@ em {
   white-space: nowrap;
   transition: background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease),
     border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+
+/* a light sweep crosses the pill on hover */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.34) 50%, transparent 62%);
+  transform: translateX(-135%);
+  transition: transform 820ms var(--ease);
+  pointer-events: none;
+}
+
+.btn:hover::before {
+  transform: translateX(135%);
+}
+
+.btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn--ghost::before {
+  background: linear-gradient(105deg, transparent 38%, rgba(18, 46, 138, 0.12) 50%, transparent 62%);
 }
 
 .btn-arrow {
@@ -1132,6 +1213,31 @@ em {
   color: var(--accent);
 }
 
+.card:hover .card-idx {
+  color: var(--signal);
+}
+
+.card-idx {
+  transition: color 380ms var(--ease);
+}
+
+.step.is-active .step-idx {
+  color: var(--signal);
+}
+
+.step-idx {
+  transition: color 380ms var(--ease);
+}
+
+.post-link:hover .post-kicker > span:first-child,
+.post-link:focus-visible .post-kicker > span:first-child {
+  color: var(--signal);
+}
+
+.post-kicker > span:first-child {
+  transition: color 380ms var(--ease);
+}
+
 .card-title {
   font-family: var(--serif);
   font-size: var(--t-h3);
@@ -1587,6 +1693,8 @@ em {
 }
 
 .post-thumb {
+  position: relative;
+  overflow: hidden;
   display: block;
   aspect-ratio: 16 / 10;
   margin-bottom: 1.1rem;
@@ -1598,6 +1706,36 @@ em {
 .post-link:hover .post-thumb {
   filter: saturate(1.15);
   transform: scale(1.008);
+}
+
+.post-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 50%;
+  background: linear-gradient(180deg, transparent, rgba(145, 207, 213, 0.55), transparent);
+  transform: translateY(-130%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.post-link:hover .post-thumb::after,
+.post-link:focus-visible .post-thumb::after {
+  animation: thumb-scan 1500ms var(--ease-out) 1;
+}
+
+@keyframes thumb-scan {
+  0% {
+    transform: translateY(-130%);
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(240%);
+    opacity: 0;
+  }
 }
 
 .post-thumb--rings {
@@ -2115,6 +2253,40 @@ html.js .section-head.is-in::after {
   transform: scaleX(1);
 }
 
+/* a short magenta glint that runs along the rule once, as it completes */
+.section-head::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--signal), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.js .section-head.is-in::before {
+  animation: rule-scan 1900ms var(--ease-out) 380ms 1 both;
+}
+
+@keyframes rule-scan {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  72% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(660%);
+    opacity: 0;
+  }
+}
+
 html.js .doctrine-col::after {
   transform: scaleX(0);
   transition: transform 900ms var(--ease-out);
@@ -2604,6 +2776,14 @@ html[data-lang="zh"] .btn {
   html.js .wordmark-clip .footer-wordmark {
     clip-path: none !important;
     transform: none !important;
+  }
+
+  .display em,
+  .h2 em,
+  .quote blockquote em {
+    color: var(--ink) !important;
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
   }
 
   body {

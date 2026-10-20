@@ -396,6 +396,24 @@
         Noto Serif SC 由 Google Fonts 按 unicode-range 切片，浏览器只下载页面实际用到的那几片，而不是整包 1–3 MB。这是「标题用真衬线、正文不背字库」的折中。
       </p>
 
+      <h3>图版重做：从静态纹理改成一台扫描仪</h3>
+      <p>
+        原来的图版只有一圈缓慢自转的短线，本质上是一张纹理。换成一台「在工作的仪器」，分八层叠起来：
+      </p>
+      <ol>
+        <li><strong>冷光底盘</strong>——清水蓝的柔和径向渐变，让点阵有承载面，不至于浮在纸面上。</li>
+        <li><strong>声呐环</strong>——两条同心环每 5.3 秒从圆心推向边缘，边推边淡。</li>
+        <li><strong>刻度环</strong>——72 根刻线，每 6 根加长；被光扫到时变蓝变亮。</li>
+        <li><strong>点阵场</strong>——约 460 根短线，始终保底可见；光扫过处变亮并偏向深海蓝。</li>
+        <li><strong>数据波</strong>——每 3.8 秒一圈亮度从圆心推到边缘，越靠外越暗，像在逐层探测。</li>
+        <li><strong>扫描头</strong>——0.92 弧度的渐隐尾巴 + 甜酷粉光头，12.5 秒绕行一周。</li>
+        <li><strong>卫星点</strong>——内圈一颗缓慢反向公转的小点。</li>
+        <li><strong>核心</strong>——固定圆点外包一圈呼吸环。</li>
+      </ol>
+      <p>
+        全部用 <code>exp(-x²)</code> 做衰减，没有一处硬切换；点阵数量按画布尺寸自适应（手机约 260 根，桌面 460 根），离屏即停、DPR 上限 2，减少动效时只画一帧静态。
+      </p>
+
       <h3>第二轮新增的动效</h3>
       <table>
         <thead><tr><th>位置</th><th>动效</th><th>时长 / 缓动</th></tr></thead>
@@ -404,15 +422,25 @@
           <tr><td>首屏</td><td>说明 / 按钮 / 指标 / 图版分级入场</td><td>720ms · 延迟 180–610ms</td></tr>
           <tr><td>首屏</td><td>图版随滚动视差，文案同步轻微退场</td><td>0.08 系数 · rAF 节流</td></tr>
           <tr><td>首屏</td><td>事件视界图版从 0.965 缩放到 1</td><td>1800ms · ease-out</td></tr>
+          <tr><td>首屏</td><td><strong>图版扫描仪</strong>：磁粉光头绕环 12.5s 一圈，尾巴渐隐</td><td>0.5 rad/s · 常驻</td></tr>
+          <tr><td>首屏</td><td><strong>数据波</strong>：一圈亮起从圆心推向边缘</td><td>3.8s 一次 · 常驻</td></tr>
+          <tr><td>首屏</td><td>点阵随光扫过变亮并偏向深海蓝</td><td>高斯衰减 · 常驻</td></tr>
+          <tr><td>首屏</td><td>声呐环从圆心扩散、中心呼吸</td><td>5.3s / 3.7s</td></tr>
+          <tr><td>标题</td><td>强调字上缓慢流动的高光</td><td>21s 往返</td></tr>
           <tr><td>区块</td><td>顶部细线从左向右绘制</td><td>900ms · ease-out</td></tr>
+          <tr><td>区块</td><td>细线上掠过一道粉色光点</td><td>1900ms · 进入时一次</td></tr>
           <tr><td>区块</td><td>五处大标题逐行擦入</td><td>980ms · 行间 90ms</td></tr>
           <tr><td>信条</td><td>三栏顶线依次绘制 + 正文逐句显现</td><td>900ms / 24ms 步进</td></tr>
           <tr><td>仪器</td><td>卡片悬停顶部强调线展开、图标变色</td><td>560ms · ease-out</td></tr>
           <tr><td>流程</td><td>当前步骤圆点填充、正文加深</td><td>420ms · 随滚动切换</td></tr>
           <tr><td>遥测</td><td>切换标签时读数淡出换值再淡入</td><td>160ms 出 / 240ms 入</td></tr>
           <tr><td>遥测</td><td>心电波形持续缓行、粉色脉冲点呼吸</td><td>76 px/s · 2.6s</td></tr>
+          <tr><td>遥测</td><td>波形前端有实时游标（扫描竖线 + 粉色光点）</td><td>常驻</td></tr>
           <tr><td>结果</td><td>数字跳动 + 单位随值稳定</td><td>1200ms · ease-out</td></tr>
           <tr><td>期刊</td><td>缩略图悬停轻微放大、阅读字样滑入</td><td>720ms / 380ms</td></tr>
+          <tr><td>期刊</td><td>悬停时缩略图扫过一道浅蓝光带</td><td>1500ms · 一次</td></tr>
+          <tr><td>按钮</td><td>悬停时高光斜扫过药丸</td><td>820ms · ease</td></tr>
+          <tr><td>细节</td><td>卡片序号、文章分类、当前步骤编号转粉</td><td>380ms</td></tr>
           <tr><td>页脚</td><td>巨型字标从基线下方升起</td><td>1200ms · ease-out</td></tr>
           <tr><td>全局</td><td>语言切换整页交叉淡化（View Transition）</td><td>260ms 出 / 340ms 入</td></tr>
         </tbody>
